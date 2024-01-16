@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Library</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>preview</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="NBip32Fast.Benchmark\**" />
+	  <Compile Remove="NBip32Fast.Tests\**" />
+	  <EmbeddedResource Remove="NBip32Fast.Benchmark\**" />
+	  <EmbeddedResource Remove="NBip32Fast.Tests\**" />
+	  <None Remove="NBip32Fast.Benchmark\**" />
+	  <None Remove="NBip32Fast.Tests\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="BouncyCastle.Cryptography" Version="2.2.1" />
+	  <PackageReference Include="Nethermind.Crypto.SecP256k1" Version="1.1.1" />
+	  <PackageReference Include="NSec.Cryptography" Version="23.9.0-preview.3" />
+	</ItemGroup>
+
+</Project>
