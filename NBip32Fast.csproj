@@ -14,6 +14,16 @@ Supports SecP256k1 and Ed25519</Description>
 		<PackageTags>bip32, bip39, ed25519, secp256k1, hdkey, bip44, bitcoin, crypto</PackageTags>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="LICENSE.txt" Pack="true" PackagePath="\"/>
+		<None Include="README.md" Pack="true" PackagePath="\"/>
+	</ItemGroup>
+
 	<ItemGroup>
 	  <Compile Remove="NBip32Fast.Benchmark\**" />
 	  <Compile Remove="NBip32Fast.Tests\**" />
