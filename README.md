@@ -1,3 +1,5 @@
+[![NuGet](https://img.shields.io/nuget/v/NBip32Fast.svg)](https://www.nuget.org/packages/NBip32Fast)
+
 # NBip32Fast
 *High perfomance BIP-32 HD key derivation library for .NET 8*
 
