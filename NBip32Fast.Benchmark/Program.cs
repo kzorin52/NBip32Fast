@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
+using NBip32Fast;
 
 //var test = new Secp256K1Tests();
 //Console.WriteLine(Convert.ToHexStringLower(test.NBitcoinKey()));

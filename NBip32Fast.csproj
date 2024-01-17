@@ -6,6 +6,12 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>preview</LangVersion>
+		<Authors>Temnij</Authors>
+		<Description>High perfomance BIP-32 HD key derivation library for .NET 8.
+Supports SecP256k1 and Ed25519</Description>
+		<PackageProjectUrl>https://github.com/kzorin52/NBip32Fast</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/kzorin52/NBip32Fast</RepositoryUrl>
+		<PackageTags>bip32, bip39, ed25519, secp256k1, hdkey, bip44, bitcoin, crypto</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup>
