@@ -111,6 +111,12 @@ public readonly struct KeyPathElement
         Number = hardened ? number + HardenedOffset : number;
         Hardened = hardened;
 
+        if (number < 100)
+        {
+            Serialized = hardened ? SerCache.HardCache.Span[(int)number] : SerCache.SoftCache.Span[(int)number];
+            return;
+        }
+
         Serialized = new ReadOnlyMemory<byte>(SerializeUInt32(Number));
     }
 
@@ -143,7 +149,7 @@ public readonly struct KeyPathElement
 
     #endregion
 
-    private static byte[] SerializeUInt32(in uint index)
+    public static byte[] SerializeUInt32(in uint index)
     {
         return
         [
@@ -154,3 +160,22 @@ public readonly struct KeyPathElement
         ];
     }
 }
+
+public static class SerCache
+{
+    public static readonly ReadOnlyMemory<ReadOnlyMemory<byte>> SoftCache = FillCache(false);
+    public static readonly ReadOnlyMemory<ReadOnlyMemory<byte>> HardCache = FillCache(true);
+
+    private static ReadOnlyMemory<ReadOnlyMemory<byte>> FillCache(bool hard)
+    {
+        var result = new ReadOnlyMemory<byte>[100];
+        for (var i = 0u; i < 100u; i++)
+        {
+            result[i] = new ReadOnlyMemory<byte>(
+                KeyPathElement.SerializeUInt32(hard ? i + KeyPathElement.HardenedOffset : i));
+        }
+
+        return new ReadOnlyMemory<ReadOnlyMemory<byte>>(result);
+    }
+}
+// WARNING! CURSED CODE!

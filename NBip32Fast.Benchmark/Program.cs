@@ -8,7 +8,7 @@ using NBip32Fast;
 //Console.WriteLine(Convert.ToHexStringLower(test.NBip39FastKey()));
 //Console.WriteLine(Convert.ToHexStringLower(test.NetezosKey()));
 
-BenchmarkRunner.Run<Secp256K1Tests>();
+//BenchmarkRunner.Run<Secp256K1Tests>();
 
 //var test2 = new Ed25519Tests();
 //Console.WriteLine(Convert.ToHexStringLower(test2.P3HdKey()));
@@ -16,6 +16,7 @@ BenchmarkRunner.Run<Secp256K1Tests>();
 //Console.WriteLine(Convert.ToHexStringLower(test2.NetezosKey()));
 
 //BenchmarkRunner.Run<Ed25519Tests>();
+BenchmarkRunner.Run<SerCacheTest>();
 
 public class Secp256K1Tests
 {
@@ -122,5 +123,37 @@ public class Ed25519Tests
          Ed25519Tests.P3HdKey: Default       -> 2 outliers were removed (10.49 us, 12.07 us)
          Ed25519Tests.NBip32FastKey: Default -> 2 outliers were removed (7.31 us, 8.27 us)
          Ed25519Tests.NetezosKey: Default    -> 3 outliers were removed (9.69 us..11.23 us)
+     */
+}
+
+public class SerCacheTest
+{
+    private const uint TestCase = 80u;
+    public SerCacheTest()
+    {
+        if (SerCache.HardCache.Length != 100 || SerCache.SoftCache.Length != 100)
+        {
+            throw new Exception();
+        }
+    }
+
+    [Benchmark]
+    public ReadOnlyMemory<byte> GetSerCache()
+    {
+        return SerCache.SoftCache.Span[(int)TestCase];
+    }
+
+    [Benchmark]
+    public ReadOnlyMemory<byte> GetSer()
+    {
+        return KeyPathElement.SerializeUInt32(TestCase);
+    }
+    /*
+     * | Method      | Mean     | Error     | StdDev    |
+       |------------ |---------:|----------:|----------:|
+       | GetSerCache | 2.304 ns | 0.0112 ns | 0.0094 ns |
+       | GetSer      | 3.318 ns | 0.0890 ns | 0.0989 ns |
+    lol what the actually fuck i am doing
+    okay so 30% faster (?????????)
      */
 }
