@@ -58,17 +58,16 @@ public class Secp256K1Tests
          DefaultJob : .NET 9.0.0 (9.0.24.5902), X64 RyuJIT AVX-512F+CD+BW+DQ+VL+VBMI
        
        
-       | Method        | Mean      | Error     | StdDev   |
-       |-------------- |----------:|----------:|---------:|
-       | NBitcoinKey   | 705.46 us |  5.886 us | 5.218 us |
-       | NBip39FastKey |  57.82 us |  0.278 us | 0.217 us |
-       | NetezosKey    | 977.09 us | 12.330 us | 9.627 us |
+       | Method        | Mean      | Error     | StdDev    |
+       |-------------- |----------:|----------:|----------:|
+       | NBitcoinKey   | 695.37 us |  6.180 us |  5.781 us |
+       | NBip39FastKey |  57.17 us |  0.541 us |  0.423 us |
+       | NetezosKey    | 999.42 us | 19.827 us | 22.038 us |
        
        // * Hints *
        Outliers
-         Secp256K1Tests.NBitcoinKey: Default   -> 3 outliers were removed (729.61 us..785.45 us)
-         Secp256K1Tests.NBip39FastKey: Default -> 1 outlier  was  removed (63.85 us)
-         Secp256K1Tests.NetezosKey: Default    -> 2 outliers were removed (998.58 us, 1.17 ms)
+           Secp256K1Tests.NBip39FastKey: Default -> 3 outliers were removed (59.44 us..67.63 us)
+           Secp256K1Tests.NetezosKey: Default    -> 2 outliers were removed (1.07 ms, 1.15 ms)
      */
 }
 

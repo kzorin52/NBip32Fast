@@ -1,7 +1,7 @@
-﻿using System.Numerics;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using NBip32Fast.Interfaces;
 using Nethermind.Crypto;
+using Nethermind.Int256;
 
 namespace NBip32Fast.Algos;
 
@@ -9,8 +9,8 @@ public class Secp256K1HdKey : IHdKeyAlgo
 {
     private static readonly ReadOnlyMemory<byte> CurveBytes = new("Bitcoin seed"u8.ToArray());
 
-    private static readonly BigInteger N =
-        BigInteger.Parse("115792089237316195423570985008687907852837564279074904382605163141518161494337");
+    private static readonly UInt256 N =
+        UInt256.Parse("115792089237316195423570985008687907852837564279074904382605163141518161494337");
 
     public HdKey GetMasterKeyFromSeed(in ReadOnlySpan<byte> seed)
     {
@@ -19,45 +19,41 @@ public class Secp256K1HdKey : IHdKeyAlgo
         while (true)
         {
             HMACSHA512.HashData(CurveBytes.Span, seedCopy, seedCopy); // hope its okay
+
             var key = seedCopy[..32];
-            var parse256Ll = new BigInteger(key, true, true);
+            var keyInt = new UInt256(key, true);
+            if (keyInt > N || keyInt.IsZero) continue;
 
-            if (parse256Ll.CompareTo(N) >= 0 || parse256Ll.CompareTo(BigInteger.Zero) == 0) continue;
-
-            var cc = seedCopy[32..];
-            return new HdKey(key, cc);
+            return new HdKey(key, seedCopy[32..]);
         }
     }
 
     public HdKey Derive(HdKey parent, KeyPathElement index)
     {
         var hash = index.Hardened
-            ? IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x0, parent.Key).AsSpan()
+            ? IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x00, parent.Key).AsSpan()
             : IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, GetPublic(parent.Key)).AsSpan();
 
         var key = hash[..32];
         var cc = hash[32..];
 
-        var kPar = new BigInteger(parent.Key, true, true);
+        var parentKey = new UInt256(parent.Key, true);
 
         while (true)
         {
-            var parse256Ll = new BigInteger(key, true, true);
-            var keyInt = (parse256Ll + kPar) % N;
+            var keyInt = new UInt256(key, true);
+            UInt256.AddMod(keyInt, parentKey, N, out var res);
 
-            if (parse256Ll.CompareTo(N) >= 0 || keyInt.CompareTo(BigInteger.Zero) == 0)
+            if (keyInt > N || res.IsZero)
             {
-                hash = IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 1, cc).AsSpan();
+                hash = IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x01, cc).AsSpan();
                 key = hash[..32];
                 cc = hash[32..];
                 continue;
             }
 
-            var keyBytes = keyInt.ToByteArray(true, true);
-
-            return keyBytes.Length == 32
-                ? new HdKey(keyBytes, cc)
-                : new HdKey((byte[]) [.. new byte[32 - keyBytes.Length], .. keyBytes], cc); // padding, maybe okay
+            var keyBytes = res.ToBigEndian();
+            return new HdKey(keyBytes, cc);
         }
     }
 
