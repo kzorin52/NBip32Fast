@@ -20,8 +20,8 @@ Supports SecP256k1 and Ed25519</Description>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Include="LICENSE.txt" Pack="true" PackagePath="\"/>
-		<None Include="README.md" Pack="true" PackagePath="\"/>
+		<None Include="LICENSE.txt" Pack="true" PackagePath="\" />
+		<None Include="README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -31,6 +31,14 @@ Supports SecP256k1 and Ed25519</Description>
 	  <EmbeddedResource Remove="NBip32Fast.Tests\**" />
 	  <None Remove="NBip32Fast.Benchmark\**" />
 	  <None Remove="NBip32Fast.Tests\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="guidelines.txt" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Include="guidelines.txt" />
 	</ItemGroup>
 
 	<ItemGroup>
