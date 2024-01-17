@@ -8,7 +8,7 @@ using NBip32Fast;
 //Console.WriteLine(Convert.ToHexStringLower(test.NBip39FastKey()));
 //Console.WriteLine(Convert.ToHexStringLower(test.NetezosKey()));
 
-//BenchmarkRunner.Run<Secp256K1Tests>();
+BenchmarkRunner.Run<Secp256K1Tests>();
 
 //var test2 = new Ed25519Tests();
 //Console.WriteLine(Convert.ToHexStringLower(test2.P3HdKey()));
@@ -16,7 +16,7 @@ using NBip32Fast;
 //Console.WriteLine(Convert.ToHexStringLower(test2.NetezosKey()));
 
 //BenchmarkRunner.Run<Ed25519Tests>();
-BenchmarkRunner.Run<SerCacheTest>();
+//BenchmarkRunner.Run<SerCacheTest>();
 
 public class Secp256K1Tests
 {
@@ -58,11 +58,11 @@ public class Secp256K1Tests
          DefaultJob : .NET 9.0.0 (9.0.24.5902), X64 RyuJIT AVX-512F+CD+BW+DQ+VL+VBMI
        
        
-       | Method        | Mean      | Error    | StdDev   |
-       |-------------- |----------:|---------:|---------:|
-       | NBitcoinKey   | 699.54 us | 5.756 us | 4.494 us |
-       | NBip39FastKey |  58.37 us | 0.626 us | 0.555 us |
-       | NetezosKey    | 969.39 us | 9.176 us | 7.662 us |
+       | Method        | Mean      | Error     | StdDev   |
+       |-------------- |----------:|----------:|---------:|
+       | NBitcoinKey   | 705.46 us |  5.886 us | 5.218 us |
+       | NBip39FastKey |  57.82 us |  0.278 us | 0.217 us |
+       | NetezosKey    | 977.09 us | 12.330 us | 9.627 us |
        
        // * Hints *
        Outliers

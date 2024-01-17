@@ -1,15 +1,16 @@
-﻿using System.Security.Cryptography;
+﻿using System.Numerics;
+using System.Security.Cryptography;
 using NBip32Fast.Interfaces;
 using Nethermind.Crypto;
-using Org.BouncyCastle.Asn1.Sec;
-using Org.BouncyCastle.Math;
 
 namespace NBip32Fast.Algos;
 
 public class Secp256K1HdKey : IHdKeyAlgo
 {
     private static readonly ReadOnlyMemory<byte> CurveBytes = new("Bitcoin seed"u8.ToArray());
-    private static readonly BigInteger N = SecNamedCurves.GetByName("secp256k1").N;
+
+    private static readonly BigInteger N =
+        BigInteger.Parse("115792089237316195423570985008687907852837564279074904382605163141518161494337");
 
     public HdKey GetMasterKeyFromSeed(in ReadOnlySpan<byte> seed)
     {
@@ -19,7 +20,7 @@ public class Secp256K1HdKey : IHdKeyAlgo
         {
             HMACSHA512.HashData(CurveBytes.Span, seedCopy, seedCopy); // hope its okay
             var key = seedCopy[..32];
-            var parse256Ll = new BigInteger(1, key);
+            var parse256Ll = new BigInteger(key, true, true);
 
             if (parse256Ll.CompareTo(N) >= 0 || parse256Ll.CompareTo(BigInteger.Zero) == 0) continue;
 
@@ -37,11 +38,12 @@ public class Secp256K1HdKey : IHdKeyAlgo
         var key = hash[..32];
         var cc = hash[32..];
 
+        var kPar = new BigInteger(parent.Key, true, true);
+
         while (true)
         {
-            var parse256Ll = new BigInteger(1, key);
-            var kPar = new BigInteger(1, parent.Key);
-            var keyInt = parse256Ll.Add(kPar).Mod(N);
+            var parse256Ll = new BigInteger(key, true, true);
+            var keyInt = (parse256Ll + kPar) % N;
 
             if (parse256Ll.CompareTo(N) >= 0 || keyInt.CompareTo(BigInteger.Zero) == 0)
             {
@@ -51,11 +53,11 @@ public class Secp256K1HdKey : IHdKeyAlgo
                 continue;
             }
 
-            var keyBytes = keyInt.ToByteArrayUnsigned().AsSpan();
+            var keyBytes = keyInt.ToByteArray(true, true);
 
             return keyBytes.Length == 32
                 ? new HdKey(keyBytes, cc)
-                : new HdKey((byte[])[.. new byte[32 - keyBytes.Length], .. keyBytes], cc); // padding, maybe okay
+                : new HdKey((byte[]) [.. new byte[32 - keyBytes.Length], .. keyBytes], cc); // padding, maybe okay
         }
     }
 

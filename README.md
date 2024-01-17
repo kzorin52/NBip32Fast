@@ -23,11 +23,11 @@ for (var i = 0u; i < 5u; i++)
 
 ## Benchmarks
 ### SecP256K1
-| Method        | Mean      | Error    | StdDev   |
-|-------------- |----------:|---------:|---------:|
-| NBitcoinKey   | 699.54 us | 5.756 us | 4.494 us |
-| **NBip39FastKey** |  58.37 us | 0.626 us | 0.555 us |
-| NetezosKey    | 969.39 us | 9.176 us | 7.662 us |
+| Method        | Mean      | Error     | StdDev   |
+|-------------- |----------:|----------:|---------:|
+| NBitcoinKey   | 705.46 us |  5.886 us | 5.218 us |
+| **NBip39FastKey**|  57.82 us |  0.278 us | 0.217 us |
+| NetezosKey    | 977.09 us | 12.330 us | 9.627 us |
 
 ### Ed25519
 | Method                  | Mean     | Error     | StdDev    |
