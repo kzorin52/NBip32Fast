@@ -4,42 +4,41 @@ namespace NBip32Fast.Interfaces;
 
 public interface IHdKeyAlgo
 {
-    public HdKey GetMasterKeyFromSeed(in ReadOnlySpan<byte> seed);
+    public HdKey GetMasterKeyFromSeed(ReadOnlySpan<byte> seed);
     public HdKey Derive(HdKey parent, KeyPathElement index);
 
-    public HdKey DerivePath(in KeyPath path, in ReadOnlySpan<byte> seed)
+    public HdKey DerivePath(KeyPath path, ReadOnlySpan<byte> seed)
     {
-        return DerivePath(path.Elements, seed);
+        return DerivePath(path.Elements.Span, seed);
     }
 
-    public HdKey DerivePath(in ReadOnlyMemory<KeyPathElement> path, in ReadOnlySpan<byte> seed)
+    public HdKey DerivePath(ReadOnlySpan<KeyPathElement> path, ReadOnlySpan<byte> seed)
     {
         var key = GetMasterKeyFromSeed(seed);
         return DeriveFromMasterKey(path, key);
     }
 
-    public HdKey DeriveFromMasterKey(in KeyPath path, HdKey masterKey)
+    public HdKey DeriveFromMasterKey(KeyPath path, HdKey masterKey)
     {
-        return DeriveFromMasterKey(path.Elements, masterKey);
+        return DeriveFromMasterKey(path.Elements.Span, masterKey);
     }
 
-    public HdKey DeriveFromMasterKey(in ReadOnlyMemory<KeyPathElement> path, HdKey masterKey)
+    public HdKey DeriveFromMasterKey(ReadOnlySpan<KeyPathElement> path, HdKey masterKey)
     {
         var result = masterKey;
-        for (var i = 0; i < path.Length; i++) result = Derive(result, path.Span[i]);
+        for (var i = 0; i < path.Length; i++) result = Derive(result, path[i]);
 
         return result;
     }
 
-    public byte[] GetPublic(in ReadOnlySpan<byte> privateKey);
+    public byte[] GetPublic(ReadOnlySpan<byte> privateKey);
 
-    protected static byte[] Bip32Hash(in ReadOnlySpan<byte> chainCode, KeyPathElement index, byte[] data)
+    protected static byte[] Bip32Hash(ReadOnlySpan<byte> chainCode, KeyPathElement index, byte[] data)
     {
         return HMACSHA512.HashData(chainCode, [.. data, .. index.Serialized.Span]);
     }
 
-    protected static byte[] Bip32Hash(in ReadOnlySpan<byte> chainCode, KeyPathElement index, byte prefix,
-        ReadOnlySpan<byte> data)
+    protected static byte[] Bip32Hash(ReadOnlySpan<byte> chainCode, KeyPathElement index, byte prefix, ReadOnlySpan<byte> data)
     {
         return HMACSHA512.HashData(chainCode, [prefix, .. data, .. index.Serialized.Span]);
     }

@@ -8,13 +8,13 @@ public class Ed25519HdKey : IHdKeyAlgo
 {
     private static readonly ReadOnlyMemory<byte> CurveBytes = new("ed25519 seed"u8.ToArray());
 
-    public HdKey GetMasterKeyFromSeed(in ReadOnlySpan<byte> seed)
+    public HdKey GetMasterKeyFromSeed(ReadOnlySpan<byte> seed)
     {
         var i = HMACSHA512.HashData(CurveBytes.Span, seed).AsSpan();
         return new HdKey(i[..32], i[32..]);
     }
 
-    public byte[] GetPublic(in ReadOnlySpan<byte> privateKey)
+    public byte[] GetPublic(ReadOnlySpan<byte> privateKey)
     {
         return Key.Import(SignatureAlgorithm.Ed25519,
                 privateKey,

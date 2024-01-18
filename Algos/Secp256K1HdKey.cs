@@ -10,7 +10,7 @@ public class Secp256K1HdKey : IHdKeyAlgo
     private static readonly ReadOnlyMemory<byte> CurveBytes = new("Bitcoin seed"u8.ToArray());
     private static readonly UInt256 N = UInt256.Parse("115792089237316195423570985008687907852837564279074904382605163141518161494337");
 
-    public HdKey GetMasterKeyFromSeed(in ReadOnlySpan<byte> seed)
+    public HdKey GetMasterKeyFromSeed(ReadOnlySpan<byte> seed)
     {
         var seedCopy = seed.ToArray().AsSpan();
 
@@ -55,7 +55,7 @@ public class Secp256K1HdKey : IHdKeyAlgo
         }
     }
 
-    public byte[] GetPublic(in ReadOnlySpan<byte> privateKey)
+    public byte[] GetPublic(ReadOnlySpan<byte> privateKey)
     {
         return SecP256k1.GetPublicKey(privateKey.ToArray(), true)!;
     }
