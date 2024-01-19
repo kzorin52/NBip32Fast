@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace NBip32Fast;
 
@@ -149,6 +150,7 @@ public readonly struct KeyPathElement
 
     #endregion
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static byte[] SerializeUInt32(in uint index)
     {
         return

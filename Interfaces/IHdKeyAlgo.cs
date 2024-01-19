@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 
 namespace NBip32Fast.Interfaces;
 
@@ -33,11 +34,13 @@ public interface IHdKeyAlgo
 
     public byte[] GetPublic(ReadOnlySpan<byte> privateKey);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected static byte[] Bip32Hash(ReadOnlySpan<byte> chainCode, KeyPathElement index, byte[] data)
     {
         return HMACSHA512.HashData(chainCode, [.. data, .. index.Serialized.Span]);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected static byte[] Bip32Hash(ReadOnlySpan<byte> chainCode, KeyPathElement index, byte prefix, ReadOnlySpan<byte> data)
     {
         return HMACSHA512.HashData(chainCode, [prefix, .. data, .. index.Serialized.Span]);

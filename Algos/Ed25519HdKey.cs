@@ -16,10 +16,8 @@ public class Ed25519HdKey : IHdKeyAlgo
 
     public byte[] GetPublic(ReadOnlySpan<byte> privateKey)
     {
-        return Key.Import(SignatureAlgorithm.Ed25519,
-                privateKey,
-                KeyBlobFormat.RawPrivateKey).PublicKey
-            .Export(KeyBlobFormat.RawPublicKey);
+        using var key = Key.Import(SignatureAlgorithm.Ed25519, privateKey, KeyBlobFormat.RawPrivateKey);
+        return key.PublicKey.Export(KeyBlobFormat.RawPublicKey);
     }
     /* some my benchamrks:
        | Method       | Mean     | Error    | StdDev   |
