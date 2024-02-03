@@ -27,7 +27,8 @@ public interface IHdKeyAlgo
     public HdKey DeriveFromMasterKey(ReadOnlySpan<KeyPathElement> path, HdKey masterKey)
     {
         var result = masterKey;
-        for (var i = 0; i < path.Length; i++) result = Derive(result, path[i]);
+        foreach (var t in path)
+            result = Derive(result, t);
 
         return result;
     }

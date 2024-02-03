@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace NBip32Fast;
@@ -112,13 +113,15 @@ public readonly struct KeyPathElement
         Number = hardened ? number + HardenedOffset : number;
         Hardened = hardened;
 
-        if (number < 100)
+        if (number < 100ul)
         {
-            Serialized = hardened ? SerCache.HardCache.Span[(int)number] : SerCache.SoftCache.Span[(int)number];
+            Serialized = hardened 
+                ? SerCache.HardCache.Span[(int)number] 
+                : SerCache.SoftCache.Span[(int)number];
             return;
         }
 
-        Serialized = new ReadOnlyMemory<byte>(SerializeUInt32(Number));
+        Serialized = SerializeUInt32(Number);
     }
 
     #region Equality
@@ -151,15 +154,15 @@ public readonly struct KeyPathElement
     #endregion
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static byte[] SerializeUInt32(in uint index)
+    public static ReadOnlyMemory<byte> SerializeUInt32(in uint index)
     {
-        return
-        [
-            (byte)((index >> 24) & 0xFF),
-            (byte)((index >> 16) & 0xFF),
-            (byte)((index >> 8) & 0xFF),
-            (byte)((index >> 0) & 0xFF)
-        ];
+        Memory<byte> ser = new byte[4];
+        MemoryMarshal.Write(ser.Span, in index);
+
+        if (BitConverter.IsLittleEndian)
+            ser.Span.Reverse(); // change endianness
+
+        return ser;
     }
 }
 
@@ -173,8 +176,7 @@ public static class SerCache
         var result = new ReadOnlyMemory<byte>[100];
         for (var i = 0u; i < 100u; i++)
         {
-            result[i] = new ReadOnlyMemory<byte>(
-                KeyPathElement.SerializeUInt32(hard ? i + KeyPathElement.HardenedOffset : i));
+            result[i] = KeyPathElement.SerializeUInt32(hard ? i + KeyPathElement.HardenedOffset : i);
         }
 
         return new ReadOnlyMemory<ReadOnlyMemory<byte>>(result);

@@ -1,14 +1,16 @@
 ﻿using System.Security.Cryptography;
 using NBip32Fast.Interfaces;
-using Nethermind.Crypto;
 using Nethermind.Int256;
+using NistP256Net;
 
 namespace NBip32Fast.Algos;
 
-public class Secp256K1HdKey : IHdKeyAlgo
+public class NistP256HdKey : IHdKeyAlgo
 {
-    private static readonly ReadOnlyMemory<byte> CurveBytes = new("Bitcoin seed"u8.ToArray());
-    private static readonly UInt256 N = UInt256.Parse("115792089237316195423570985008687907852837564279074904382605163141518161494337");
+    private static readonly ReadOnlyMemory<byte> CurveBytes = new("Nist256p1 seed"u8.ToArray());
+
+    private static readonly UInt256 N =
+        UInt256.Parse("115792089210356248762697446949407573529996955224135760342422259061068512044369");
 
     public HdKey GetMasterKeyFromSeed(ReadOnlySpan<byte> seed)
     {
@@ -16,7 +18,7 @@ public class Secp256K1HdKey : IHdKeyAlgo
 
         while (true)
         {
-            HMACSHA512.HashData(CurveBytes.Span, seedCopy, seedCopy); // hope its okay
+            HMACSHA512.HashData(CurveBytes.Span, seedCopy, seedCopy);
 
             var key = seedCopy[..32];
             var keyInt = new UInt256(key, true);
@@ -57,18 +59,13 @@ public class Secp256K1HdKey : IHdKeyAlgo
 
     public byte[] GetPublic(ReadOnlySpan<byte> privateKey)
     {
-        return SecP256k1.GetPublicKey(privateKey.ToArray(), true)!;
+        return NistP256.GetPublicKey(privateKey);
     }
 
-    /* some my benchamrks:
-       | Method               | Mean      | Error     | StdDev    |
-       |--------------------- |----------:|----------:|----------:|
-       | BouncyCastlePub      | 484.89 us |  7.248 us |  6.780 us |
-       | NBitcoinSecp256K1Pub | 123.40 us |  0.765 us |  0.716 us |
-       | NBitcoinPub          | 114.46 us |  0.973 us |  0.862 us |
-       | NativePub            |  36.64 us |  0.432 us |  0.404 us |
-       | EcdsaLibPub          |  80.81 us |  0.792 us |  0.702 us |
-       | NethermindPub        |  25.18 us |  0.187 us |  0.166 us | <-- [fastest]
-       | LibplanetPub         | 963.74 us | 13.782 us | 12.892 us | <-- [slowest]
-    */
+    /*
+       | Method          | Mean       | Error    | StdDev   |
+       |---------------- |-----------:|---------:|---------:|
+       | BouncyCastlePub | 1,149.3 us | 12.76 us | 11.31 us |
+       | NativePub       |   143.1 us |  0.97 us |  0.90 us |
+     */
 }

@@ -16,20 +16,33 @@ public class DerivationTest
         "6144c1daf8222d6dab77e7a20c2f338519b83bd1423602c56c7dfb5e9ea99c02",
         "55b36970e7ab8434f9b04f1c2e52da7422d2bce7e284ca353419dddfa2e34bdb");
 
+    private static readonly TestCase Case1NistP256 = new(
+        "m/0'/0/0",
+        "159dd0bcc8c6982fcbcf53d77a914d32cdae5ae170b5d6d14557f7c141d507f5",
+        "a96fed72636cb6a63ceb2a2e3a8a8ca8cff872ef4f102ebfa5f28bcc8f823ff5");
+
     [TestMethod]
-    public void TestBip39Ed25519()
+    public void TestBip32Ed25519()
     {
         var der1 = Derivation.Ed25519.DerivePath(Case1Ed25519.Path, TestCase.Seed.Span);
-        Assert.IsTrue(der1.Key.SequenceEqual(Case1Ed25519.Key.Span));
+        Assert.IsTrue(der1.PrivateKey.SequenceEqual(Case1Ed25519.Key.Span));
         Assert.IsTrue(der1.ChainCode.SequenceEqual(Case1Ed25519.ChainCode.Span));
     }
 
     [TestMethod]
-    public void TestBip39Secp256K1()
+    public void TestBip32Secp256K1()
     {
         var der1 = Derivation.Secp256K1.DerivePath(Case1SecP256K1.Path, TestCase.Seed.Span);
-        Assert.IsTrue(der1.Key.SequenceEqual(Case1SecP256K1.Key.Span));
+        Assert.IsTrue(der1.PrivateKey.SequenceEqual(Case1SecP256K1.Key.Span));
         Assert.IsTrue(der1.ChainCode.SequenceEqual(Case1SecP256K1.ChainCode.Span));
+    }
+
+    [TestMethod]
+    public void TestBip32NistP256()
+    {
+        var der1 = Derivation.NistP256.DerivePath(Case1NistP256.Path, TestCase.Seed.Span);
+        Assert.IsTrue(der1.PrivateKey.SequenceEqual(Case1NistP256.Key.Span));
+        Assert.IsTrue(der1.ChainCode.SequenceEqual(Case1NistP256.ChainCode.Span));
     }
 }
 

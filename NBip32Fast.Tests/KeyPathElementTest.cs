@@ -12,6 +12,7 @@ public class KeyPathElementTest
     [TestMethod]
     public void TestKeyElement()
     {
-        Assert.IsTrue(TestData1.Serialized.Span.SequenceEqual(TestData1Serialized.Span));
+        Assert.IsTrue(TestData1.Serialized.Span.SequenceEqual(TestData1Serialized.Span), 
+            $"{TestData1.Number} [h={TestData1.Hardened}] [ser={Convert.ToHexStringLower(TestData1.Serialized.Span)}] != {Convert.ToHexStringLower(TestData1Serialized.Span)}]");
     }
 }

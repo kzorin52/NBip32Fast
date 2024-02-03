@@ -29,7 +29,7 @@ public class Ed25519HdKey : IHdKeyAlgo
 
     public HdKey Derive(HdKey parent, KeyPathElement index)
     {
-        var i = IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x0, parent.Key).AsSpan();
+        var i = IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x0, parent.PrivateKey).AsSpan();
         return new HdKey(i[..32], i[32..]);
     }
 }

@@ -8,6 +8,7 @@
 ```cs
 var secp256k1Key = NBip32Fast.Derivation.Secp256K1.DerivePath("m/44'/0'/0'/0/0", seed).Key;
 var ed25519Key = NBip32Fast.Derivation.Ed25519.DerivePath("m/44'/0'/0'/0'/0'", seed).Key;
+var nistP256Key = NBip32Fast.Derivation.NistP256.DerivePath("m/44'/0'/0'/0'/0'", seed).Key;
 ```
 
 ### Optimised
@@ -23,17 +24,23 @@ for (var i = 0u; i < 5u; i++)
 
 ## Benchmarks
 ### SecP256K1
-| Method        | Mean      | Error     | StdDev    |
-|-------------- |----------:|----------:|----------:|
-| NBitcoinKey   | 695.37 us |  6.180 us |  5.781 us |
-|**NBip39FastKey**|  57.17 us |  0.541 us |  0.423 us |
-| NetezosKey    | 999.42 us | 19.827 us | 22.038 us |
+| Method        | Mean      | Error    | StdDev   |
+|:--------------|----------:|---------:|---------:|
+| NBitcoinKey   | 681.74 us | 5.098 us | 4.519 us |
+| **NBip39FastKey** | **56.36 us** | 0.409 us | 0.382 us |
+| NetezosKey    | 957.96 us | 5.120 us | 3.998 us |
 
 ### Ed25519
-| Method                  | Mean     | Error     | StdDev    |
-|------------------------ |---------:|----------:|----------:|
-| P3HdKey                 | 9.932 us | 0.1545 us | 0.1290 us |
-| **NBip32FastKey**       | 7.126 us | 0.0319 us | 0.0266 us |
-| NetezosKey              | 9.242 us | 0.0867 us | 0.0677 us |
+| Method        | Mean     | Error     | StdDev    |
+|:--------------|---------:|----------:|----------:|
+| P3HdKey       | 9.413 us | 0.0886 us | 0.0829 us |
+| **NBip32FastKey** | **6.944 us** | 0.0498 us | 0.0442 us |
+| NetezosKey    | 8.934 us | 0.1022 us | 0.0956 us |
+
+### NistP256
+| Method        | Mean       | Error    | StdDev   |
+|:--------------|-----------:|---------:|---------:|
+| **NBip39FastKey** | **239.8 us** |  1.09 us |  0.96 us |
+| NetezosKey    | 2,183.8 us | 29.81 us | 27.88 us |
 
 [Benchmark code](https://github.com/kzorin52/NBip32Fast/blob/master/NBip32Fast.Benchmark/Program.cs)
