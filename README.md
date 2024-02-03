@@ -8,7 +8,7 @@
 ```cs
 var secp256k1Key = NBip32Fast.Derivation.Secp256K1.DerivePath("m/44'/0'/0'/0/0", seed).Key;
 var ed25519Key = NBip32Fast.Derivation.Ed25519.DerivePath("m/44'/0'/0'/0'/0'", seed).Key;
-var nistP256Key = NBip32Fast.Derivation.NistP256.DerivePath("m/44'/0'/0'/0'/0'", seed).Key;
+var nistP256Key = NBip32Fast.Derivation.NistP256.DerivePath("m/44'/0'/0'/0/0", seed).Key;
 ```
 
 ### Optimised
