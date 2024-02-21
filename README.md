@@ -23,24 +23,26 @@ for (var i = 0u; i < 5u; i++)
 ```
 
 ## Benchmarks
+> Intel Core i9-14900K, 1 CPU, 32 logical and 24 physical cores
+
 ### SecP256K1
 | Method        | Mean      | Error    | StdDev   |
-|:--------------|----------:|---------:|---------:|
-| NBitcoinKey   | 681.74 us | 5.098 us | 4.519 us |
-| **NBip39FastKey** | **56.36 us** | 0.409 us | 0.382 us |
-| NetezosKey    | 957.96 us | 5.120 us | 3.998 us |
+|-------------- |----------:|---------:|---------:|
+| **NBip39FastKey** |  38.10 us | 0.329 us | 0.308 us |
+| NBitcoinKey   | 454.49 us | 0.789 us | 0.700 us |
+| NetezosKey    | 647.82 us | 4.799 us | 4.254 us |
 
 ### Ed25519
 | Method        | Mean     | Error     | StdDev    |
-|:--------------|---------:|----------:|----------:|
-| P3HdKey       | 9.413 us | 0.0886 us | 0.0829 us |
-| **NBip32FastKey** | **6.944 us** | 0.0498 us | 0.0442 us |
-| NetezosKey    | 8.934 us | 0.1022 us | 0.0956 us |
+|-------------- |---------:|----------:|----------:|
+| **NBip32FastKey** | 4.561 us | 0.0242 us | 0.0227 us |
+| NetezosKey    | 5.962 us | 0.0300 us | 0.0281 us |
+| P3HdKey       | 6.264 us | 0.1115 us | 0.1489 us |
 
 ### NistP256
-| Method        | Mean       | Error    | StdDev   |
-|:--------------|-----------:|---------:|---------:|
-| **NBip39FastKey** | **239.8 us** |  1.09 us |  0.96 us |
-| NetezosKey    | 2,183.8 us | 29.81 us | 27.88 us |
+| Method        | Mean       | Error   | StdDev  |
+|-------------- |-----------:|--------:|--------:|
+| **NBip39FastKey** |   163.8 us | 0.26 us | 0.32 us |
+| NetezosKey    | 1,447.5 us | 5.16 us | 4.57 us |
 
 [Benchmark code](https://github.com/kzorin52/NBip32Fast/blob/master/NBip32Fast.Benchmark/Program.cs)

@@ -41,7 +41,8 @@ public class NistP256HdKey : IHdKeyAlgo
 
         while (true)
         {
-            var keyInt = new UInt256(key, true);
+            key.Reverse();
+            var keyInt = new UInt256(key);
             UInt256.AddMod(keyInt, parentKey, N, out var res);
 
             if (keyInt > N || res.IsZero)

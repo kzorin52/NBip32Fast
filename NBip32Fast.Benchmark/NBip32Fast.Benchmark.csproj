@@ -9,8 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
-    <PackageReference Include="NBitcoin" Version="7.0.32" />
-    <PackageReference Include="Netezos" Version="2.8.0" />
+    <PackageReference Include="NBitcoin" Version="7.0.34" />
+    <PackageReference Include="Netezos" Version="2.9.0" />
     <PackageReference Include="P3.Ed25519.HdKey" Version="1.0.3" />
   </ItemGroup>
 

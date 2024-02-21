@@ -8,14 +8,14 @@ using NBip32Fast;
 //Console.WriteLine(Convert.ToHexStringLower(test.NBip39FastKey()));
 //Console.WriteLine(Convert.ToHexStringLower(test.NetezosKey()));
 
-//BenchmarkRunner.Run<Secp256K1Tests>();
+BenchmarkRunner.Run<Secp256K1Tests>();
 
 //var test2 = new Ed25519Tests();
 //Console.WriteLine(Convert.ToHexStringLower(test2.P3HdKey()));
 //Console.WriteLine(Convert.ToHexStringLower(test2.NBip32FastKey()));
 //Console.WriteLine(Convert.ToHexStringLower(test2.NetezosKey()));
 
-//BenchmarkRunner.Run<Ed25519Tests>();
+BenchmarkRunner.Run<Ed25519Tests>();
 //BenchmarkRunner.Run<SerCacheTest>();
 
 //var test3 = new Secp256R1Tests();
@@ -57,22 +57,22 @@ public class Secp256K1Tests
       // * Summary *
        
        BenchmarkDotNet v0.13.12, Windows 11 (10.0.26020.1000)
-       11th Gen Intel Core i7-11700K 3.60GHz, 1 CPU, 16 logical and 8 physical cores
-       .NET SDK 9.0.100-alpha.1.24060.1
-         [Host]     : .NET 9.0.0 (9.0.24.5902), X64 RyuJIT AVX-512F+CD+BW+DQ+VL+VBMI
-         DefaultJob : .NET 9.0.0 (9.0.24.5902), X64 RyuJIT AVX-512F+CD+BW+DQ+VL+VBMI
+       Intel Core i9-14900K, 1 CPU, 32 logical and 24 physical cores
+       .NET SDK 9.0.100-preview.2.24119.3
+         [Host]     : .NET 9.0.0 (9.0.24.11501), X64 RyuJIT AVX2
+         DefaultJob : .NET 9.0.0 (9.0.24.11501), X64 RyuJIT AVX2
        
        
-       | Method        | Mean        | Error     | StdDev    |
-       |-------------- |------------:|----------:|----------:|
-       | NBitcoinKey   |   704.28 us | 13.124 us | 14.042 us |
-       | NBip39FastKey |    58.73 us |  1.067 us |  0.945 us |
-       | NetezosKey    | 1,057.24 us | 21.017 us | 29.462 us |
+       | Method        | Mean      | Error    | StdDev   |
+       |-------------- |----------:|---------:|---------:|
+       | NBitcoinKey   | 454.49 us | 0.789 us | 0.700 us |
+       | NBip39FastKey |  38.10 us | 0.329 us | 0.308 us |
+       | NetezosKey    | 647.82 us | 4.799 us | 4.254 us |
        
        // * Hints *
        Outliers
-           Secp256K1Tests.NBip39FastKey: Default -> 3 outliers were removed (59.44 us..67.63 us)
-           Secp256K1Tests.NetezosKey: Default    -> 2 outliers were removed (1.07 ms, 1.15 ms)
+         Secp256K1Tests.NBitcoinKey: Default -> 1 outlier  was  removed, 2 outliers were detected (452.71 us, 456.58 us)
+         Secp256K1Tests.NetezosKey: Default  -> 1 outlier  was  removed (682.74 us)
      */
 }
 
@@ -104,20 +104,21 @@ public class Secp256R1Tests
      // * Summary *
        
        BenchmarkDotNet v0.13.12, Windows 11 (10.0.26020.1000)
-       11th Gen Intel Core i7-11700K 3.60GHz, 1 CPU, 16 logical and 8 physical cores
-       .NET SDK 9.0.100-alpha.1.24060.1
-         [Host]     : .NET 9.0.0 (9.0.24.5902), X64 RyuJIT AVX-512F+CD+BW+DQ+VL+VBMI
-         DefaultJob : .NET 9.0.0 (9.0.24.5902), X64 RyuJIT AVX-512F+CD+BW+DQ+VL+VBMI
+       Intel Core i9-14900K, 1 CPU, 32 logical and 24 physical cores
+       .NET SDK 9.0.100-preview.2.24119.3
+         [Host]     : .NET 9.0.0 (9.0.24.11501), X64 RyuJIT AVX2
+         DefaultJob : .NET 9.0.0 (9.0.24.11501), X64 RyuJIT AVX2
        
        
-       | Method        | Mean       | Error    | StdDev   |
-       |-------------- |-----------:|---------:|---------:|
-       | NBip39FastKey |   239.8 us |  1.09 us |  0.96 us |
-       | NetezosKey    | 2,183.8 us | 29.81 us | 27.88 us |
+       | Method        | Mean       | Error   | StdDev  |
+       |-------------- |-----------:|--------:|--------:|
+       | NBip39FastKey |   163.8 us | 0.26 us | 0.32 us |
+       | NetezosKey    | 1,447.5 us | 5.16 us | 4.57 us |
        
        // * Hints *
        Outliers
-         Secp256R1Tests.NBip39FastKey: Default -> 1 outlier  was  removed (242.95 us)
+         Secp256R1Tests.NBip39FastKey: Default -> 7 outliers were removed (199.50 us..312.65 us)
+         Secp256R1Tests.NetezosKey: Default    -> 1 outlier  was  removed, 2 outliers were detected (1.44 ms, 1.46 ms)
      */
 }
 
@@ -152,26 +153,25 @@ public class Ed25519Tests
     }
 
     /*
-      // * Summary *
+     // * Summary *
        
        BenchmarkDotNet v0.13.12, Windows 11 (10.0.26020.1000)
-       11th Gen Intel Core i7-11700K 3.60GHz, 1 CPU, 16 logical and 8 physical cores
-       .NET SDK 9.0.100-alpha.1.24060.1
-         [Host]     : .NET 9.0.0 (9.0.24.5902), X64 RyuJIT AVX-512F+CD+BW+DQ+VL+VBMI
-         DefaultJob : .NET 9.0.0 (9.0.24.5902), X64 RyuJIT AVX-512F+CD+BW+DQ+VL+VBMI
+       Intel Core i9-14900K, 1 CPU, 32 logical and 24 physical cores
+       .NET SDK 9.0.100-preview.2.24119.3
+         [Host]     : .NET 9.0.0 (9.0.24.11501), X64 RyuJIT AVX2
+         DefaultJob : .NET 9.0.0 (9.0.24.11501), X64 RyuJIT AVX2
        
        
-       | Method                  | Mean     | Error     | StdDev    |
-       |------------------------ |---------:|----------:|----------:|
-       | P3HdKey                 | 9.932 us | 0.1545 us | 0.1290 us |
-       | NBip32FastKey           | 7.126 us | 0.0319 us | 0.0266 us |
-       | NetezosKey              | 9.242 us | 0.0867 us | 0.0677 us |
+       | Method        | Mean     | Error     | StdDev    |
+       |-------------- |---------:|----------:|----------:|
+       | P3HdKey       | 6.264 us | 0.1115 us | 0.1489 us |
+       | NBip32FastKey | 4.561 us | 0.0242 us | 0.0227 us |
+       | NetezosKey    | 5.962 us | 0.0300 us | 0.0281 us |
        
        // * Hints *
        Outliers
-         Ed25519Tests.P3HdKey: Default       -> 2 outliers were removed (10.49 us, 12.07 us)
-         Ed25519Tests.NBip32FastKey: Default -> 2 outliers were removed (7.31 us, 8.27 us)
-         Ed25519Tests.NetezosKey: Default    -> 3 outliers were removed (9.69 us..11.23 us)
+         Ed25519Tests.P3HdKey: Default    -> 8 outliers were removed (9.70 us..10.61 us)
+         Ed25519Tests.NetezosKey: Default -> 1 outlier  was  detected (5.90 us)
      */
 }
 
