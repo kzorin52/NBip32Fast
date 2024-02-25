@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -157,10 +158,7 @@ public readonly struct KeyPathElement
     public static ReadOnlyMemory<byte> SerializeUInt32(in uint index)
     {
         Memory<byte> ser = new byte[4];
-        MemoryMarshal.Write(ser.Span, in index);
-
-        if (BitConverter.IsLittleEndian)
-            ser.Span.Reverse(); // change endianness
+        BinaryPrimitives.WriteUInt32BigEndian(ser.Span, index);
 
         return ser;
     }

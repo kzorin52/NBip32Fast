@@ -7,13 +7,13 @@
 ### Basic
 ```cs
 var secp256k1Key = NBip32Fast.Derivation.Secp256K1.DerivePath("m/44'/0'/0'/0/0", seed).Key;
-var ed25519Key = NBip32Fast.Derivation.Ed25519.DerivePath("m/44'/0'/0'/0'/0'", seed).Key;
 var nistP256Key = NBip32Fast.Derivation.NistP256.DerivePath("m/44'/0'/0'/0/0", seed).Key;
+var ed25519Key = NBip32Fast.Derivation.Ed25519.DerivePath("m/44'/0'/0'/0'/0'", seed).Key;
 ```
 
 ### Optimised
 ```cs
-var master = Derivation.Ed25519.DerivePath("m/44'/888'/0'/0", seed);
+var master = Derivation.Ed25519.DerivePath("m/44'/888'/0'/0'", seed);
 var accounts = new List<byte[]>();
 
 for (var i = 0u; i < 5u; i++)
