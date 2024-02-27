@@ -26,22 +26,4 @@
 		<None Include="LICENSE.txt" Pack="true" PackagePath="\" />
 		<None Include="README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
-
-	<ItemGroup>
-		<Compile Remove="NBip32Fast.Benchmark\**" />
-		<Compile Remove="NBip32Fast.Ed25519\**" />
-		<Compile Remove="NBip32Fast.Secp256K1\**" />
-		<Compile Remove="NBip32Fast.NistP256\**" />
-		<Compile Remove="NBip32Fast.Tests\**" />
-		<EmbeddedResource Remove="NBip32Fast.Benchmark\**" />
-		<EmbeddedResource Remove="NBip32Fast.Ed25519\**" />
-		<EmbeddedResource Remove="NBip32Fast.Secp256K1\**" />
-		<EmbeddedResource Remove="NBip32Fast.NistP256\**" />
-		<EmbeddedResource Remove="NBip32Fast.Tests\**" />
-		<None Remove="NBip32Fast.Benchmark\**" />
-		<None Remove="NBip32Fast.Ed25519\**" />
-		<None Remove="NBip32Fast.Secp256K1\**" />
-		<None Remove="NBip32Fast.NistP256\**" />
-		<None Remove="NBip32Fast.Tests\**" />
-	</ItemGroup>
 </Project>
