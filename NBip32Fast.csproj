@@ -7,8 +7,10 @@
 		<Nullable>enable</Nullable>
 		<LangVersion>preview</LangVersion>
 		<Authors>Temnij</Authors>
-		<Description>High perfomance BIP-32 HD key derivation library for .NET 8.
-Supports SecP256k1, Ed25519 and NistP256 (SecP256r1)</Description>
+		<Description>
+			High perfomance BIP-32 HD key derivation library for .NET 8.
+			Supports SecP256k1, Ed25519 and NistP256 (SecP256r1)
+		</Description>
 		<PackageProjectUrl>https://github.com/kzorin52/NBip32Fast</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/kzorin52/NBip32Fast</RepositoryUrl>
 		<PackageTags>bip32, bip39, ed25519, secp256k1, secp256r1, nistp256, Nist256p1, p256, hdkey, bip44, bitcoin, crypto, ethereum, neo</PackageTags>
@@ -17,7 +19,7 @@ Supports SecP256k1, Ed25519 and NistP256 (SecP256r1)</Description>
 	<PropertyGroup>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<Version>1.0.4</Version>
+		<Version>1.0.5</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -26,27 +28,20 @@ Supports SecP256k1, Ed25519 and NistP256 (SecP256r1)</Description>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Remove="NBip32Fast.Benchmark\**" />
-	  <Compile Remove="NBip32Fast.Tests\**" />
-	  <EmbeddedResource Remove="NBip32Fast.Benchmark\**" />
-	  <EmbeddedResource Remove="NBip32Fast.Tests\**" />
-	  <None Remove="NBip32Fast.Benchmark\**" />
-	  <None Remove="NBip32Fast.Tests\**" />
+		<Compile Remove="NBip32Fast.Benchmark\**" />
+		<Compile Remove="NBip32Fast.Ed25519\**" />
+		<Compile Remove="NBip32Fast.Secp256K1\**" />
+		<Compile Remove="NBip32Fast.NistP256\**" />
+		<Compile Remove="NBip32Fast.Tests\**" />
+		<EmbeddedResource Remove="NBip32Fast.Benchmark\**" />
+		<EmbeddedResource Remove="NBip32Fast.Ed25519\**" />
+		<EmbeddedResource Remove="NBip32Fast.Secp256K1\**" />
+		<EmbeddedResource Remove="NBip32Fast.NistP256\**" />
+		<EmbeddedResource Remove="NBip32Fast.Tests\**" />
+		<None Remove="NBip32Fast.Benchmark\**" />
+		<None Remove="NBip32Fast.Ed25519\**" />
+		<None Remove="NBip32Fast.Secp256K1\**" />
+		<None Remove="NBip32Fast.NistP256\**" />
+		<None Remove="NBip32Fast.Tests\**" />
 	</ItemGroup>
-
-	<ItemGroup>
-	  <None Remove="guidelines.txt" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Compile Include="guidelines.txt" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <PackageReference Include="Nethermind.Crypto.SecP256k1" Version="1.1.1" />
-	  <PackageReference Include="Nethermind.Numerics.Int256" Version="1.2.0" />
-	  <PackageReference Include="NistP256Net" Version="1.0.0" />
-	  <PackageReference Include="NSec.Cryptography" Version="23.9.0-preview.3" />
-	</ItemGroup>
-
 </Project>

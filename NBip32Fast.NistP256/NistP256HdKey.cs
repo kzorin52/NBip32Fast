@@ -1,16 +1,20 @@
 ﻿using System.Security.Cryptography;
 using NBip32Fast.Interfaces;
 using Nethermind.Int256;
-using NistP256Net;
 
-namespace NBip32Fast.Algos;
+namespace NBip32Fast.NistP256;
 
 public class NistP256HdKey : IHdKeyAlgo
 {
+    public static readonly IHdKeyAlgo Instance = new NistP256HdKey();
     private static readonly ReadOnlyMemory<byte> CurveBytes = new("Nist256p1 seed"u8.ToArray());
 
     private static readonly UInt256 N =
         UInt256.Parse("115792089210356248762697446949407573529996955224135760342422259061068512044369");
+
+    private NistP256HdKey()
+    {
+    }
 
     public HdKey GetMasterKeyFromSeed(ReadOnlySpan<byte> seed)
     {
@@ -60,7 +64,7 @@ public class NistP256HdKey : IHdKeyAlgo
 
     public byte[] GetPublic(ReadOnlySpan<byte> privateKey)
     {
-        return NistP256.GetPublicKey(privateKey);
+        return NistP256Net.NistP256.GetPublicKey(privateKey);
     }
 
     /*

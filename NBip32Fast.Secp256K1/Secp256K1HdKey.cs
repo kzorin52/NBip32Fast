@@ -3,12 +3,19 @@ using NBip32Fast.Interfaces;
 using Nethermind.Crypto;
 using Nethermind.Int256;
 
-namespace NBip32Fast.Algos;
+namespace NBip32Fast.Secp256K1;
 
 public class Secp256K1HdKey : IHdKeyAlgo
 {
+    public static readonly IHdKeyAlgo Instance = new Secp256K1HdKey();
     private static readonly ReadOnlyMemory<byte> CurveBytes = new("Bitcoin seed"u8.ToArray());
-    private static readonly UInt256 N = UInt256.Parse("115792089237316195423570985008687907852837564279074904382605163141518161494337");
+
+    private static readonly UInt256 N =
+        UInt256.Parse("115792089237316195423570985008687907852837564279074904382605163141518161494337");
+
+    private Secp256K1HdKey()
+    {
+    }
 
     public HdKey GetMasterKeyFromSeed(ReadOnlySpan<byte> seed)
     {

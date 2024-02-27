@@ -2,11 +2,16 @@
 using NBip32Fast.Interfaces;
 using NSec.Cryptography;
 
-namespace NBip32Fast.Algos;
+namespace NBip32Fast.Ed25519;
 
 public class Ed25519HdKey : IHdKeyAlgo
 {
+    public static readonly IHdKeyAlgo Instance = new Ed25519HdKey();
     private static readonly ReadOnlyMemory<byte> CurveBytes = new("ed25519 seed"u8.ToArray());
+
+    private Ed25519HdKey()
+    {
+    }
 
     public HdKey GetMasterKeyFromSeed(ReadOnlySpan<byte> seed)
     {
@@ -19,6 +24,13 @@ public class Ed25519HdKey : IHdKeyAlgo
         using var key = Key.Import(SignatureAlgorithm.Ed25519, privateKey, KeyBlobFormat.RawPrivateKey);
         return key.PublicKey.Export(KeyBlobFormat.RawPublicKey);
     }
+
+    public HdKey Derive(HdKey parent, KeyPathElement index)
+    {
+        var i = IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x0, parent.PrivateKey).AsSpan();
+        return new HdKey(i[..32], i[32..]);
+    }
+
     /* some my benchamrks:
        | Method       | Mean     | Error    | StdDev   |
        |------------- |---------:|---------:|---------:|
@@ -26,10 +38,4 @@ public class Ed25519HdKey : IHdKeyAlgo
        | ChaosNaClPub | 90.81 us | 1.507 us | 1.258 us | <-- [slowest]
        | HellNaClPub  | 67.98 us | 1.311 us | 1.561 us |
      */
-
-    public HdKey Derive(HdKey parent, KeyPathElement index)
-    {
-        var i = IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x0, parent.PrivateKey).AsSpan();
-        return new HdKey(i[..32], i[32..]);
-    }
 }

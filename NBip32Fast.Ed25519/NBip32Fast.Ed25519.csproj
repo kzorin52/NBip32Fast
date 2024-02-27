@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Library</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>preview</LangVersion>
+		<Authors>Temnij</Authors>
+		<Description>Blazing fast Ed25519 bip-32 keypath derivation subpackage</Description>
+		<PackageProjectUrl>https://github.com/kzorin52/NBip32Fast</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/kzorin52/NBip32Fast</RepositoryUrl>
+		<PackageTags>bip32, bip39, ed25519, hdkey, bip44, crypto</PackageTags>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Version>1.0.5</Version>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="LICENSE.txt" />
+		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="NBip32Fast" Version="1.0.5" />
+		<PackageReference Include="NSec.Cryptography" Version="23.9.0-preview.3" />
+	</ItemGroup>
+</Project>

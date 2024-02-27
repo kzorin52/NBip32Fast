@@ -44,7 +44,7 @@ public class Secp256K1Tests
     [Benchmark]
     public byte[] NBip39FastKey()
     {
-        return NBip32Fast.Derivation.Secp256K1.DerivePath(KeyPath, _seedSpan.Span).PrivateKey.ToArray();
+        return NBip32Fast.Secp256K1.Secp256K1HdKey.Instance.DerivePath(KeyPath, _seedSpan.Span).PrivateKey.ToArray();
     }
 
     [Benchmark]
@@ -91,7 +91,7 @@ public class Secp256R1Tests
     [Benchmark]
     public byte[] NBip39FastKey()
     {
-        return NBip32Fast.Derivation.NistP256.DerivePath(KeyPath, _seedSpan.Span).PrivateKey.ToArray();
+        return NBip32Fast.NistP256.NistP256HdKey.Instance.DerivePath(KeyPath, _seedSpan.Span).PrivateKey.ToArray();
     }
 
     [Benchmark]
@@ -143,7 +143,7 @@ public class Ed25519Tests
     [Benchmark]
     public byte[] NBip32FastKey()
     {
-        return NBip32Fast.Derivation.Ed25519.DerivePath(KeyPath, _seedSpan.Span).PrivateKey.ToArray();
+        return NBip32Fast.Ed25519.Ed25519HdKey.Instance.DerivePath(KeyPath, _seedSpan.Span).PrivateKey.ToArray();
     }
 
     [Benchmark]

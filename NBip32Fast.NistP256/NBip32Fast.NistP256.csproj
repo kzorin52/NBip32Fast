@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Library</OutputType>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>preview</LangVersion>
+		<Authors>Temnij</Authors>
+		<Description>Blazing fast NistP256 (SecP256r1) bip-32 keypath derivation subpackage</Description>
+		<PackageProjectUrl>https://github.com/kzorin52/NBip32Fast</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/kzorin52/NBip32Fast</RepositoryUrl>
+		<PackageTags>bip32, bip39, secp256r1, nistp256, Nist256p1, p256, hdkey, bip44, crypto, neo</PackageTags>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Version>1.0.5</Version>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="LICENSE.txt" Pack="true" PackagePath="\" />
+		<None Include="README.md" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="NBip32Fast" Version="1.0.5" />
+		<PackageReference Include="Nethermind.Numerics.Int256" Version="1.2.0" />
+		<PackageReference Include="NistP256Net" Version="1.0.0" />
+	</ItemGroup>
+
+</Project>

@@ -1,4 +1,7 @@
 [![NuGet](https://img.shields.io/nuget/v/NBip32Fast.svg)](https://www.nuget.org/packages/NBip32Fast)
+[![NuGet](https://img.shields.io/nuget/v/NBip32Fast.Secp256K1.svg)](https://www.nuget.org/packages/NBip32Fast.Secp256K1)
+[![NuGet](https://img.shields.io/nuget/v/NBip32Fast.Ed25519.svg)](https://www.nuget.org/packages/NBip32Fast.Ed25519)
+[![NuGet](https://img.shields.io/nuget/v/NBip32Fast.NistP256.svg)](https://www.nuget.org/packages/NBip32Fast.NistP256)
 
 # NBip32Fast
 *High perfomance BIP-32 HD key derivation library for .NET 8*
@@ -6,19 +9,19 @@
 ## Usage
 ### Basic
 ```cs
-var secp256k1Key = NBip32Fast.Derivation.Secp256K1.DerivePath("m/44'/0'/0'/0/0", seed).Key;
-var nistP256Key = NBip32Fast.Derivation.NistP256.DerivePath("m/44'/0'/0'/0/0", seed).Key;
-var ed25519Key = NBip32Fast.Derivation.Ed25519.DerivePath("m/44'/0'/0'/0'/0'", seed).Key;
+var secp256k1Key = Secp256K1.Secp256K1HdKey.Instance.DerivePath("m/44'/0'/0'/0/0", seed).Key;
+var nistP256Key = NistP256.NistP256HdKey.Instance.DerivePath("m/44'/0'/0'/0/0", seed).Key;
+var ed25519Key = Ed25519.Ed25519HdKey.Instance.DerivePath("m/44'/0'/0'/0'/0'", seed).Key;
 ```
 
 ### Optimised
 ```cs
-var master = Derivation.Ed25519.DerivePath("m/44'/888'/0'/0'", seed);
+var master = Ed25519.Ed25519HdKey.Instance.DerivePath("m/44'/888'/0'/0'", seed);
 var accounts = new List<byte[]>();
 
 for (var i = 0u; i < 5u; i++)
 {
-    accounts.Add(Derivation.Ed25519.GetPublic(Derivation.Ed25519.Derive(master, new KeyPathElement(i, true)).Key));
+    accounts.Add(Ed25519.Ed25519HdKey.Instance.GetPublic(Ed25519.Ed25519HdKey.Instance.Derive(master, new KeyPathElement(i, true)).Key));
 }
 ```
 

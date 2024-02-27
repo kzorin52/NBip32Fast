@@ -36,7 +36,7 @@ public interface IHdKeyAlgo
     public byte[] GetPublic(ReadOnlySpan<byte> privateKey);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected static byte[] Bip32Hash(ReadOnlySpan<byte> chainCode, KeyPathElement index, byte[] data)
+    protected static byte[] Bip32Hash(ReadOnlySpan<byte> chainCode, KeyPathElement index, ReadOnlySpan<byte> data)
     {
         return HMACSHA512.HashData(chainCode, [.. data, .. index.Serialized.Span]);
     }
