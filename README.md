@@ -49,3 +49,12 @@ for (var i = 0u; i < 5u; i++)
 | NetezosKey    | 1,447.5 us | 5.16 us | 4.57 us |
 
 [Benchmark code](https://github.com/kzorin52/NBip32Fast/blob/master/NBip32Fast.Benchmark/Program.cs)
+
+
+## TODOs
+- [ ] Ed25519 soft derivation scheme (used in `Cardano`)
+- [ ] `KeyPathTree` for efficient computing (for multiple keypath merging and index depth)
+- [ ] `HDKey` refactoring with public key lazy addition
+- [ ] `Secp256K1` public key without `Span<byte>` to `byte[]` conversion
+    - [ ] All providers `ReadOnlyMemory<byte>` public keys
+- [ ] More testing
