@@ -42,7 +42,8 @@ public interface IHdKeyAlgo
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected static byte[] Bip32Hash(ReadOnlySpan<byte> chainCode, KeyPathElement index, byte prefix, ReadOnlySpan<byte> data)
+    protected static byte[] Bip32Hash(ReadOnlySpan<byte> chainCode, KeyPathElement index, byte prefix,
+        ReadOnlySpan<byte> data)
     {
         return HMACSHA512.HashData(chainCode, [prefix, .. data, .. index.Serialized.Span]);
     }

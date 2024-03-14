@@ -1,6 +1,5 @@
 ﻿using System.Security.Cryptography;
 using NBip32Fast.Interfaces;
-using NSec.Cryptography;
 
 namespace NBip32Fast.Ed25519;
 
@@ -21,12 +20,32 @@ public class Ed25519HdKey : IHdKeyAlgo
 
     public byte[] GetPublic(ReadOnlySpan<byte> privateKey)
     {
-        using var key = Key.Import(SignatureAlgorithm.Ed25519, privateKey, KeyBlobFormat.RawPrivateKey);
-        return key.PublicKey.Export(KeyBlobFormat.RawPublicKey);
+        Span<byte> publicKey = stackalloc byte[32];
+        Span<byte> extendedPrivateKey = stackalloc byte[64];
+
+        Geralt.Ed25519.GenerateKeyPair(publicKey, extendedPrivateKey, privateKey);
+
+        return publicKey.ToArray();
+    }
+    
+    public ReadOnlyMemory<byte> GetPublicMemory(ReadOnlySpan<byte> privateKey)
+    {
+        Memory<byte> publicKey = new byte[32];
+
+        Span<byte> extendedPrivateKey = stackalloc byte[64]; // [..privateKey[0..32], ..publicKey[0..32]], not needed
+        Geralt.Ed25519.GenerateKeyPair(publicKey.Span, extendedPrivateKey, privateKey);
+
+        return publicKey;
     }
 
     public HdKey Derive(HdKey parent, KeyPathElement index)
     {
+        if (!index.Hardened)
+        {
+            // TODO: Ed25519 soft derivation
+            throw new ArgumentException("Ed25519 soft derivation not yet implemented.", nameof(index));
+        }
+
         var i = IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x0, parent.PrivateKey).AsSpan();
         return new HdKey(i[..32], i[32..]);
     }
@@ -34,8 +53,8 @@ public class Ed25519HdKey : IHdKeyAlgo
     /* some my benchamrks:
        | Method       | Mean     | Error    | StdDev   |
        |------------- |---------:|---------:|---------:|
-       | NSecPub      | 34.89 us | 0.340 us | 0.302 us | <-- [fastest]
-       | ChaosNaClPub | 90.81 us | 1.507 us | 1.258 us | <-- [slowest]
-       | HellNaClPub  | 67.98 us | 1.311 us | 1.561 us |
+       | NSecPub      | 24.77 us | 0.056 us | 0.049 us |
+       | GeraltPub    | 19.25 us | 0.028 us | 0.025 us | << fastest because of no secure memory handles
+       | ChaosNaClPub | 48.54 us | 0.057 us | 0.053 us |
      */
 }

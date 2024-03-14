@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<OutputType>Library</OutputType>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net9.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>preview</LangVersion>
@@ -13,13 +13,14 @@
 		</Description>
 		<PackageProjectUrl>https://github.com/kzorin52/NBip32Fast</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/kzorin52/NBip32Fast</RepositoryUrl>
-		<PackageTags>bip32, bip39, ed25519, secp256k1, secp256r1, nistp256, Nist256p1, p256, hdkey, bip44, bitcoin, crypto, ethereum, neo</PackageTags>
+		<PackageTags>bip32, bip39, ed25519, secp256k1, secp256r1, nistp256, Nist256p1, p256, hdkey, bip44, bip43, bitcoin, crypto, ethereum, neo</PackageTags>
 	</PropertyGroup>
 
 	<PropertyGroup>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<Version>1.0.5</Version>
+		<Version>1.0.7</Version>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -21,10 +21,14 @@ public struct KeyPath(KeyPathElement[] elements)
     {
         var sb = new StringBuilder("m/");
         var last = Elements.Length - 1;
-        for (var i = 0; i < Elements.Length; i++)
+
+        var elementsSpan = Elements.Span;
+        for (var i = 0; i < elementsSpan.Length; i++)
         {
-            var element = Elements.Span[i];
-            sb.Append(element.Hardened ? element.Number - KeyPathElement.HardenedOffset : element.Number);
+            var element = elementsSpan[i];
+            sb.Append(element.Hardened 
+                ? element.Number - KeyPathElement.HardenedOffset 
+                : element.Number);
             if (element.Hardened)
                 sb.Append('\'');
             if (i != last) sb.Append('/');
@@ -162,6 +166,12 @@ public readonly struct KeyPathElement
 
         return ser;
     }
+}
+
+public class KeyPathTree
+{
+    public KeyPathElement Element;
+    public KeyPathTree[]? Children;
 }
 
 public static class SerCache

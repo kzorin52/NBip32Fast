@@ -71,6 +71,6 @@ public class NistP256HdKey : IHdKeyAlgo
        | Method          | Mean       | Error    | StdDev   |
        |---------------- |-----------:|---------:|---------:|
        | BouncyCastlePub | 1,149.3 us | 12.76 us | 11.31 us |
-       | NativePub       |   143.1 us |  0.97 us |  0.90 us |
+       | NativePub       |   143.1 us |  0.97 us |  0.90 us | // on rust-crypto/p256
      */
 }
