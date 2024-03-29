@@ -29,26 +29,26 @@ for (var i = 0u; i < 5u; i++)
 > Intel Core i9-14900K, 1 CPU, 32 logical and 24 physical cores
 
 ### SecP256K1
-| Method        | Mean      | Error    | StdDev   |
-|-------------- |----------:|---------:|---------:|
-| **NBip39FastKey** |  38.10 us | 0.329 us | 0.308 us |
-| NBitcoinKey   | 454.49 us | 0.789 us | 0.700 us |
-| NetezosKey    | 647.82 us | 4.799 us | 4.254 us |
+| Method        | Mean      | Error    | StdDev   | Gen0     | Gen1   | Allocated  |
+|-------------- |----------:|---------:|---------:|---------:|-------:|-----------:|
+| **NBip39FastKey** |  37.91 us | 0.112 us | 0.105 us |   0.0610 |      - |    2.04 KB |
+| NBitcoinKey   | 448.31 us | 1.104 us | 1.033 us |   0.4883 |      - |    9.38 KB |
+| NetezosKey    | 619.23 us | 4.850 us | 4.537 us | 168.9453 | 0.9766 | 3112.87 KB |
 
 ### Ed25519
-| Method        | Mean     | Error     | StdDev    |
-|-------------- |---------:|----------:|----------:|
-| **NBip32FastKey** | 4.561 us | 0.0242 us | 0.0227 us |
-| NetezosKey    | 5.962 us | 0.0300 us | 0.0281 us |
-| P3HdKey       | 6.264 us | 0.1115 us | 0.1489 us |
+| Method        | Mean     | Error     | StdDev    | Gen0   | Allocated |
+|-------------- |---------:|----------:|----------:|-------:|----------:|
+| **NBip32FastKey** | 4.572 us | 0.0104 us | 0.0097 us | 0.0839 |   1.59 KB |
+| NetezosKey    | 5.796 us | 0.0257 us | 0.0241 us | 0.3204 |   5.95 KB |
+| P3HdKey       | 6.173 us | 0.0103 us | 0.0126 us | 0.3357 |   6.28 KB |
 
 ### NistP256
-| Method        | Mean       | Error   | StdDev  |
-|-------------- |-----------:|--------:|--------:|
-| **NBip39FastKey** |   163.8 us | 0.26 us | 0.32 us |
-| NetezosKey    | 1,447.5 us | 5.16 us | 4.57 us |
+| Method        | Mean       | Error    | StdDev  | Gen0     | Gen1   | Allocated  |
+|-------------- |-----------:|---------:|--------:|---------:|-------:|-----------:|
+| **NBip39FastKey** |   161.6 us |  0.19 us | 0.17 us |        - |      - |    1.93 KB |
+| NetezosKey    | 1,429.4 us | 10.00 us | 8.86 us | 373.0469 | 1.9531 | 6888.66 KB |
 
-[Benchmark code](https://github.com/kzorin52/NBip32Fast/blob/master/NBip32Fast.Benchmark/Program.cs)
+[Benchmark code](https://github.com/kzorin52/NBip32Fast/blob/master/NBip32Fast.Benchmark/)
 
 
 ## TODOs
@@ -56,5 +56,5 @@ for (var i = 0u; i < 5u; i++)
 - [ ] `KeyPathTree` for efficient computing (for multiple keypath merging and index depth)
 - [ ] `HDKey` refactoring with public key lazy addition
 - [ ] `Secp256K1` public key without `Span<byte>` to `byte[]` conversion
-    - [ ] All providers `ReadOnlyMemory<byte>` public keys
+    - [ ] All providers `ReadOnlySpan<byte>` public keys
 - [ ] More testing
