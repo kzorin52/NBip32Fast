@@ -20,18 +20,18 @@ public class Ed25519HdKey : IHdKeyAlgo
 
     public byte[] GetPublic(ReadOnlySpan<byte> privateKey)
     {
-        Span<byte> extendedPrivateKey = stackalloc byte[64];
-        Geralt.Ed25519.GenerateKeyPair(extendedPrivateKey[32..], extendedPrivateKey, privateKey);
-        return extendedPrivateKey[32..].ToArray();
+        Span<byte> output = stackalloc byte[32];
+
+        Org.BouncyCastle.Math.EC.Rfc8032.Ed25519.GeneratePublicKey(privateKey, output);
+        return output.ToArray();
     }
     
     public ReadOnlyMemory<byte> GetPublicMemory(ReadOnlySpan<byte> privateKey)
     {
-        Memory<byte> extendedPrivateKey = new byte[64];
-        var span = extendedPrivateKey.Span;
+        Memory<byte> output = new byte[32];
 
-        Geralt.Ed25519.GenerateKeyPair(span[32..], span, privateKey);
-        return extendedPrivateKey[32..];
+        Org.BouncyCastle.Math.EC.Rfc8032.Ed25519.GeneratePublicKey(privateKey, output.Span);
+        return output;
     }
 
     public HdKey Derive(HdKey parent, KeyPathElement index)
@@ -47,10 +47,13 @@ public class Ed25519HdKey : IHdKeyAlgo
     }
 
     /* some my benchamrks:
-       | Method       | Mean     | Error    | StdDev   |
-       |------------- |---------:|---------:|---------:|
-       | NSecPub      | 24.77 us | 0.056 us | 0.049 us |
-       | GeraltPub    | 19.25 us | 0.028 us | 0.025 us | << fastest because of no secure memory handles
-       | ChaosNaClPub | 48.54 us | 0.057 us | 0.053 us |
+       | Method          | Mean        | Error    | StdDev   |
+       |---------------- |------------:|---------:|---------:|
+       | NSecPub         |    24.89 us | 0.030 us | 0.026 us |
+       | GeraltPub       |    19.39 us | 0.032 us | 0.029 us | << fastest
+       | MonocypherPub   |    22.93 us | 0.094 us | 0.088 us |
+       | ChaosNaClPub    |    49.54 us | 0.163 us | 0.152 us |
+       | BouncyCastlePub |    19.46 us | 0.087 us | 0.082 us | << also fast, but managed.
+       | TweetNaClPub    | 1,013.73 us | 5.763 us | 5.391 us |
      */
 }
