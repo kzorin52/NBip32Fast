@@ -20,22 +20,18 @@ public class Ed25519HdKey : IHdKeyAlgo
 
     public byte[] GetPublic(ReadOnlySpan<byte> privateKey)
     {
-        Span<byte> publicKey = stackalloc byte[32];
         Span<byte> extendedPrivateKey = stackalloc byte[64];
-
-        Geralt.Ed25519.GenerateKeyPair(publicKey, extendedPrivateKey, privateKey);
-
-        return publicKey.ToArray();
+        Geralt.Ed25519.GenerateKeyPair(extendedPrivateKey[32..], extendedPrivateKey, privateKey);
+        return extendedPrivateKey[32..].ToArray();
     }
     
     public ReadOnlyMemory<byte> GetPublicMemory(ReadOnlySpan<byte> privateKey)
     {
-        Memory<byte> publicKey = new byte[32];
+        Memory<byte> extendedPrivateKey = new byte[64];
+        var span = extendedPrivateKey.Span;
 
-        Span<byte> extendedPrivateKey = stackalloc byte[64]; // [..privateKey[0..32], ..publicKey[0..32]], not needed
-        Geralt.Ed25519.GenerateKeyPair(publicKey.Span, extendedPrivateKey, privateKey);
-
-        return publicKey;
+        Geralt.Ed25519.GenerateKeyPair(span[32..], span, privateKey);
+        return extendedPrivateKey[32..];
     }
 
     public HdKey Derive(HdKey parent, KeyPathElement index)
