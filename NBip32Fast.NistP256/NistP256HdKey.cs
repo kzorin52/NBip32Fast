@@ -7,7 +7,7 @@ namespace NBip32Fast.NistP256;
 public class NistP256HdKey : IHdKeyAlgo
 {
     public static readonly IHdKeyAlgo Instance = new NistP256HdKey();
-    private static readonly ReadOnlyMemory<byte> CurveBytes = new("Nist256p1 seed"u8.ToArray());
+    private static readonly byte[] CurveBytes = "Nist256p1 seed"u8.ToArray();
 
     private static readonly UInt256 N =
         UInt256.Parse("115792089210356248762697446949407573529996955224135760342422259061068512044369");
@@ -18,11 +18,12 @@ public class NistP256HdKey : IHdKeyAlgo
 
     public HdKey GetMasterKeyFromSeed(ReadOnlySpan<byte> seed)
     {
-        var seedCopy = seed.ToArray().AsSpan();
+        Span<byte> seedCopy = new byte[64];
+        seed.CopyTo(seedCopy);
 
         while (true)
         {
-            HMACSHA512.HashData(CurveBytes.Span, seedCopy, seedCopy);
+            HMACSHA512.HashData(CurveBytes, seedCopy, seedCopy);
 
             var key = seedCopy[..32];
             var keyInt = new UInt256(key, true);
@@ -34,9 +35,9 @@ public class NistP256HdKey : IHdKeyAlgo
 
     public HdKey Derive(HdKey parent, KeyPathElement index)
     {
-        var hash = index.Hardened
-            ? IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x00, parent.PrivateKey).AsSpan()
-            : IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, GetPublic(parent.PrivateKey)).AsSpan();
+        Span<byte> hash = index.Hardened
+            ? IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x00, parent.PrivateKey)
+            : IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, GetPublic(parent.PrivateKey));
 
         var key = hash[..32];
         var cc = hash[32..];
@@ -51,7 +52,7 @@ public class NistP256HdKey : IHdKeyAlgo
 
             if (keyInt > N || res.IsZero)
             {
-                hash = IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x01, cc).AsSpan();
+                hash = IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x01, cc);
                 key = hash[..32];
                 cc = hash[32..];
                 continue;

@@ -8,7 +8,7 @@ namespace NBip32Fast.Secp256K1;
 public class Secp256K1HdKey : IHdKeyAlgo
 {
     public static readonly IHdKeyAlgo Instance = new Secp256K1HdKey();
-    private static readonly ReadOnlyMemory<byte> CurveBytes = new("Bitcoin seed"u8.ToArray());
+    private static readonly byte[] CurveBytes = "Bitcoin seed"u8.ToArray();
 
     private static readonly UInt256 N =
         UInt256.Parse("115792089237316195423570985008687907852837564279074904382605163141518161494337");
@@ -19,11 +19,12 @@ public class Secp256K1HdKey : IHdKeyAlgo
 
     public HdKey GetMasterKeyFromSeed(ReadOnlySpan<byte> seed)
     {
-        var seedCopy = seed.ToArray().AsSpan();
+        Span<byte> seedCopy = new byte[64];
+        seed.CopyTo(seedCopy);
 
         while (true)
         {
-            HMACSHA512.HashData(CurveBytes.Span, seedCopy, seedCopy); // hope its okay
+            HMACSHA512.HashData(CurveBytes, seedCopy, seedCopy); // hope its okay
 
             var key = seedCopy[..32];
             var keyInt = new UInt256(key, true);
@@ -35,9 +36,9 @@ public class Secp256K1HdKey : IHdKeyAlgo
 
     public HdKey Derive(HdKey parent, KeyPathElement index)
     {
-        var hash = index.Hardened
-            ? IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x00, parent.PrivateKey).AsSpan()
-            : IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, GetPublic(parent.PrivateKey)).AsSpan();
+        Span<byte> hash = index.Hardened
+            ? IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x00, parent.PrivateKey)
+            : IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, GetPublic(parent.PrivateKey));
 
         var key = hash[..32];
         var cc = hash[32..];
@@ -53,7 +54,7 @@ public class Secp256K1HdKey : IHdKeyAlgo
 
             if (keyInt > N || res.IsZero)
             {
-                hash = IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x01, cc).AsSpan();
+                hash = IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x01, cc);
                 key = hash[..32];
                 cc = hash[32..];
                 continue;

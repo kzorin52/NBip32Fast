@@ -6,7 +6,7 @@ namespace NBip32Fast.Ed25519;
 public class Ed25519HdKey : IHdKeyAlgo
 {
     public static readonly IHdKeyAlgo Instance = new Ed25519HdKey();
-    private static readonly ReadOnlyMemory<byte> CurveBytes = new("ed25519 seed"u8.ToArray());
+    private static readonly byte[] CurveBytes = "ed25519 seed"u8.ToArray();
 
     private Ed25519HdKey()
     {
@@ -14,7 +14,7 @@ public class Ed25519HdKey : IHdKeyAlgo
 
     public HdKey GetMasterKeyFromSeed(ReadOnlySpan<byte> seed)
     {
-        var i = HMACSHA512.HashData(CurveBytes.Span, seed).AsSpan();
+        Span<byte> i = HMACSHA512.HashData(CurveBytes, seed);
         return new HdKey(i[..32], i[32..]);
     }
 
@@ -26,11 +26,11 @@ public class Ed25519HdKey : IHdKeyAlgo
         return output.ToArray();
     }
     
-    public ReadOnlyMemory<byte> GetPublicMemory(ReadOnlySpan<byte> privateKey)
+    public Span<byte> GetPublicSpan(ReadOnlySpan<byte> privateKey)
     {
-        Memory<byte> output = new byte[32];
+        Span<byte> output = new byte[32];
 
-        Org.BouncyCastle.Math.EC.Rfc8032.Ed25519.GeneratePublicKey(privateKey, output.Span);
+        Org.BouncyCastle.Math.EC.Rfc8032.Ed25519.GeneratePublicKey(privateKey, output);
         return output;
     }
 
@@ -42,7 +42,7 @@ public class Ed25519HdKey : IHdKeyAlgo
             throw new ArgumentException("Ed25519 soft derivation not yet implemented.", nameof(index));
         }
 
-        var i = IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x0, parent.PrivateKey).AsSpan();
+        Span<byte> i = IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x0, parent.PrivateKey);
         return new HdKey(i[..32], i[32..]);
     }
 
