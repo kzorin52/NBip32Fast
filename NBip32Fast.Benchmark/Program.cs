@@ -5,7 +5,7 @@
 //Console.WriteLine(Convert.ToHexStringLower(test.NBip39FastKey()));
 //Console.WriteLine(Convert.ToHexStringLower(test.NetezosKey()));
 
-BenchmarkRunner.Run<Secp256K1Tests>();
+//BenchmarkRunner.Run<Secp256K1Tests>();
 
 //var test2 = new Ed25519Tests();
 //Console.WriteLine(Convert.ToHexStringLower(test2.P3HdKey()));

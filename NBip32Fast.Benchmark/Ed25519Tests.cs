@@ -22,7 +22,7 @@ public class Ed25519Tests
         return P3.Ed25519.HdKey.Ed25519HdKey.DerivePath(KeyPath, _seedSpan.Span).Key;
     }
 
-    [Benchmark]
+    [Benchmark(Baseline = true)]
     public byte[] NBip32FastKey()
     {
         return NBip32Fast.Ed25519.Ed25519HdKey.Instance.DerivePath(KeyPath, _seedSpan.Span).PrivateKey.ToArray();
@@ -35,24 +35,25 @@ public class Ed25519Tests
     }
 
     /*
-     // * Summary *
+       // * Summary *
        
-       BenchmarkDotNet v0.13.12, Windows 11 (10.0.26020.1000)
+       BenchmarkDotNet v0.13.12, Windows 11 (10.0.26200.5001)
        Intel Core i9-14900K, 1 CPU, 32 logical and 24 physical cores
-       .NET SDK 9.0.100-preview.2.24119.3
-         [Host]     : .NET 9.0.0 (9.0.24.11501), X64 RyuJIT AVX2
-         DefaultJob : .NET 9.0.0 (9.0.24.11501), X64 RyuJIT AVX2
+       .NET SDK 9.0.100-preview.5.24258.8
+         [Host]     : .NET 9.0.0 (9.0.24.25601), X64 RyuJIT AVX2
+         DefaultJob : .NET 9.0.0 (9.0.24.25601), X64 RyuJIT AVX2
        
        
-       | Method        | Mean     | Error     | StdDev    |
-       |-------------- |---------:|----------:|----------:|
-       | P3HdKey       | 6.264 us | 0.1115 us | 0.1489 us |
-       | NBip32FastKey | 4.561 us | 0.0242 us | 0.0227 us |
-       | NetezosKey    | 5.962 us | 0.0300 us | 0.0281 us |
+       | Method        | Mean     | Error     | StdDev    | Ratio | RatioSD | Gen0   | Allocated | Alloc Ratio |
+       |-------------- |---------:|----------:|----------:|------:|--------:|-------:|----------:|------------:|
+       | NBip32FastKey | 4.272 us | 0.0255 us | 0.0226 us |  1.00 |    0.00 | 0.0839 |   1.59 KB |        1.00 |
+       | NetezosKey    | 5.404 us | 0.0434 us | 0.0362 us |  1.26 |    0.01 | 0.3204 |   5.99 KB |        3.76 |
+       | P3HdKey       | 5.939 us | 0.0783 us | 0.1045 us |  1.40 |    0.03 | 0.3433 |   6.33 KB |        3.97 |
        
        // * Hints *
        Outliers
-         Ed25519Tests.P3HdKey: Default    -> 8 outliers were removed (9.70 us..10.61 us)
-         Ed25519Tests.NetezosKey: Default -> 1 outlier  was  detected (5.90 us)
+         Ed25519Tests.NBip32FastKey: Default -> 1 outlier  was  removed (4.36 us)
+         Ed25519Tests.NetezosKey: Default    -> 2 outliers were removed (5.53 us, 5.69 us)
+         Ed25519Tests.P3HdKey: Default       -> 8 outliers were removed (9.89 us..10.27 us)
      */
 }

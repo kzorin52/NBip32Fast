@@ -29,24 +29,24 @@ for (var i = 0u; i < 5u; i++)
 > Intel Core i9-14900K, 1 CPU, 32 logical and 24 physical cores
 
 ### SecP256K1
-| Method        | Mean      | Error    | StdDev   | Gen0     | Gen1   | Allocated  |
-|-------------- |----------:|---------:|---------:|---------:|-------:|-----------:|
-| **NBip39FastKey** |  37.91 us | 0.112 us | 0.105 us |   0.0610 |      - |    2.04 KB |
-| NBitcoinKey   | 448.31 us | 1.104 us | 1.033 us |   0.4883 |      - |    9.38 KB |
-| NetezosKey    | 619.23 us | 4.850 us | 4.537 us | 168.9453 | 0.9766 | 3112.87 KB |
+| Method        | Mean      | Error    | StdDev   | Ratio | RatioSD | Gen0     | Gen1   | Allocated  | Alloc Ratio |
+|-------------- |----------:|---------:|---------:|------:|--------:|---------:|-------:|-----------:|------------:|
+| **NBip39FastKey** |  36.32 us | 0.332 us | 0.310 us |  1.00 |    0.00 |   0.0610 |      - |    2.04 KB |        1.00 |
+| NBitcoinKey   | 409.24 us | 3.232 us | 2.865 us | 11.26 |    0.09 |   0.4883 |      - |    9.47 KB |        4.64 |
+| NetezosKey    | 556.16 us | 7.795 us | 7.291 us | 15.31 |    0.22 | 166.9922 | 0.9766 | 3083.32 KB |    1,512.13 |
 
 ### Ed25519
-| Method        | Mean     | Error     | StdDev    | Gen0   | Allocated |
-|-------------- |---------:|----------:|----------:|-------:|----------:|
-| **NBip32FastKey** | 4.572 us | 0.0104 us | 0.0097 us | 0.0839 |   1.59 KB |
-| NetezosKey    | 5.796 us | 0.0257 us | 0.0241 us | 0.3204 |   5.95 KB |
-| P3HdKey       | 6.173 us | 0.0103 us | 0.0126 us | 0.3357 |   6.28 KB |
+| Method        | Mean     | Error     | StdDev    | Ratio | RatioSD | Gen0   | Allocated | Alloc Ratio |
+|-------------- |---------:|----------:|----------:|------:|--------:|-------:|----------:|------------:|
+| **NBip32FastKey** | 4.272 us | 0.0255 us | 0.0226 us |  1.00 |    0.00 | 0.0839 |   1.59 KB |        1.00 |
+| NetezosKey    | 5.404 us | 0.0434 us | 0.0362 us |  1.26 |    0.01 | 0.3204 |   5.99 KB |        3.76 |
+| P3HdKey       | 5.939 us | 0.0783 us | 0.1045 us |  1.40 |    0.03 | 0.3433 |   6.33 KB |        3.97 |
 
 ### NistP256
-| Method        | Mean       | Error    | StdDev  | Gen0     | Gen1   | Allocated  |
-|-------------- |-----------:|---------:|--------:|---------:|-------:|-----------:|
-| **NBip39FastKey** |   161.6 us |  0.19 us | 0.17 us |        - |      - |    1.93 KB |
-| NetezosKey    | 1,429.4 us | 10.00 us | 8.86 us | 373.0469 | 1.9531 | 6888.66 KB |
+| Method        | Mean       | Error    | StdDev   | Ratio | RatioSD | Gen0     | Gen1   | Allocated | Alloc Ratio |
+|-------------- |-----------:|---------:|---------:|------:|--------:|---------:|-------:|----------:|------------:|
+| **NBip39FastKey** |   158.3 us |  1.02 us |  2.37 us |  1.00 |    0.00 |        - |      - |   1.93 KB |        1.00 |
+| NetezosKey    | 1,324.4 us | 25.79 us | 40.91 us |  8.37 |    0.29 | 373.0469 | 1.9531 | 6857.9 KB |    3,553.89 |
 
 [Benchmark code](https://github.com/kzorin52/NBip32Fast/blob/master/NBip32Fast.Benchmark/)
 
@@ -55,6 +55,4 @@ for (var i = 0u; i < 5u; i++)
 - [ ] Ed25519 soft derivation scheme (used in `Cardano`)
 - [ ] `KeyPathTree` for efficient computing (for multiple keypath merging and index depth)
 - [ ] `HDKey` refactoring with public key lazy addition
-- [ ] `Secp256K1` public key without `Span<byte>` to `byte[]` conversion
-    - [ ] All providers `ReadOnlySpan<byte>` public keys
 - [ ] More testing

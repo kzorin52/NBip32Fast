@@ -16,7 +16,7 @@ public class Secp256R1Tests
         _seedSpan = new ReadOnlyMemory<byte>(_seedBytes);
     }
 
-    [Benchmark]
+    [Benchmark(Baseline = true)]
     public byte[] NBip39FastKey()
     {
         return NBip32Fast.NistP256.NistP256HdKey.Instance.DerivePath(KeyPath, _seedSpan.Span).PrivateKey.ToArray();
@@ -31,21 +31,20 @@ public class Secp256R1Tests
     /*
      // * Summary *
        
-       BenchmarkDotNet v0.13.12, Windows 11 (10.0.26020.1000)
+       BenchmarkDotNet v0.13.12, Windows 11 (10.0.26200.5001)
        Intel Core i9-14900K, 1 CPU, 32 logical and 24 physical cores
-       .NET SDK 9.0.100-preview.2.24119.3
-         [Host]     : .NET 9.0.0 (9.0.24.11501), X64 RyuJIT AVX2
-         DefaultJob : .NET 9.0.0 (9.0.24.11501), X64 RyuJIT AVX2
+       .NET SDK 9.0.100-preview.5.24258.8
+         [Host]     : .NET 9.0.0 (9.0.24.25601), X64 RyuJIT AVX2
+         DefaultJob : .NET 9.0.0 (9.0.24.25601), X64 RyuJIT AVX2
        
        
-       | Method        | Mean       | Error   | StdDev  |
-       |-------------- |-----------:|--------:|--------:|
-       | NBip39FastKey |   163.8 us | 0.26 us | 0.32 us |
-       | NetezosKey    | 1,447.5 us | 5.16 us | 4.57 us |
+       | Method        | Mean       | Error    | StdDev   | Ratio | RatioSD | Gen0     | Gen1   | Allocated | Alloc Ratio |
+       |-------------- |-----------:|---------:|---------:|------:|--------:|---------:|-------:|----------:|------------:|
+       | NBip39FastKey |   158.3 us |  1.02 us |  2.37 us |  1.00 |    0.00 |        - |      - |   1.93 KB |        1.00 |
+       | NetezosKey    | 1,324.4 us | 25.79 us | 40.91 us |  8.37 |    0.29 | 373.0469 | 1.9531 | 6857.9 KB |    3,553.89 |
        
        // * Hints *
        Outliers
-         Secp256R1Tests.NBip39FastKey: Default -> 7 outliers were removed (199.50 us..312.65 us)
-         Secp256R1Tests.NetezosKey: Default    -> 1 outlier  was  removed, 2 outliers were detected (1.44 ms, 1.46 ms)
+         Secp256R1Tests.NBip39FastKey: Default -> 7 outliers were removed (256.97 us..299.87 us)
      */
 }
