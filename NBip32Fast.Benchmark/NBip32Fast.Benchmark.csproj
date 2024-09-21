@@ -18,6 +18,7 @@
     <ProjectReference Include="..\NBip32Fast.NistP256\NBip32Fast.NistP256.csproj" />
     <ProjectReference Include="..\NBip32Fast.Ed25519\NBip32Fast.Ed25519.csproj" />
     <ProjectReference Include="..\NBip32Fast.Secp256K1\NBip32Fast.Secp256K1.csproj" />
+    <ProjectReference Include="..\NBip32Fast\NBip32Fast.csproj" />
   </ItemGroup>
 
 </Project>

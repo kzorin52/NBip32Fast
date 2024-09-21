@@ -1,4 +1,6 @@
-﻿using BenchmarkDotNet.Running;
+﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Running;
+using NBip32Fast;
 
 //var test = new Secp256K1Tests();
 //Console.WriteLine(Convert.ToHexStringLower(test.NBitcoinKey()));
@@ -18,4 +20,4 @@ BenchmarkRunner.Run<Ed25519Tests>();
 //var test3 = new Secp256R1Tests();
 //Console.WriteLine(Convert.ToHexStringLower(test3.NBip39FastKey()));
 //Console.WriteLine(Convert.ToHexStringLower(test3.NetezosKey()));
-BenchmarkRunner.Run<Secp256R1Tests>();
+//BenchmarkRunner.Run<Secp256R1Tests>();

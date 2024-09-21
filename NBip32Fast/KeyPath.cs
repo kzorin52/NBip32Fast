@@ -1,4 +1,5 @@
-﻿using System.Buffers.Binary;
+﻿using System.Buffers;
+using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -17,18 +18,25 @@ public struct KeyPath(KeyPathElement[] elements)
         return _str ??= ToStringPrivate();
     }
 
-    private readonly string ToStringPrivate()
+    public readonly string ToStringPrivate()
     {
-        var sb = new StringBuilder("m/");
+        var len = Elements.Length * 5 + 2; // rough approximation
+
+        var sb = len <= 1024 
+            ? new ValueStringBuilder(stackalloc char[len]) 
+            : new ValueStringBuilder(len);
+
+        sb.Append("m/");
+
         var last = Elements.Length - 1;
 
         var elementsSpan = Elements.Span;
         for (var i = 0; i < elementsSpan.Length; i++)
         {
             var element = elementsSpan[i];
-            sb.Append(element.Hardened 
+            sb.Append((element.Hardened 
                 ? element.Number - KeyPathElement.HardenedOffset 
-                : element.Number);
+                : element.Number).ToString());
             if (element.Hardened)
                 sb.Append('\'');
             if (i != last) sb.Append('/');
@@ -61,7 +69,7 @@ public struct KeyPath(KeyPathElement[] elements)
             elements[i] = new KeyPathElement(uint.Parse(hardened ? key[..^1] : key), hardened);
         }
 
-        return new KeyPath(elements);
+        return new KeyPath(elements) { _str = keyPathStr };
     }
 
     public static implicit operator KeyPath(string str)

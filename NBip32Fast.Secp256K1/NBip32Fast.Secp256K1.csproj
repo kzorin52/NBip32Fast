@@ -16,7 +16,7 @@
 	<PropertyGroup>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<Version>1.0.6</Version>
+		<Version>1.0.7</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -26,7 +26,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="NBip32Fast" Version="1.0.7" />
-		<PackageReference Include="Nethermind.Crypto.SecP256k1" Version="1.1.1" />
+		<PackageReference Include="Nethermind.Crypto.SecP256k1" Version="1.2.1" />
 		<PackageReference Include="Nethermind.Numerics.Int256" Version="1.2.0" />
 	</ItemGroup>
 

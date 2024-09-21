@@ -2,7 +2,7 @@
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
 
-[MemoryDiagnoser]
+[MemoryDiagnoser(false)]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class Ed25519Tests
 {
