@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.Buffers.Binary;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -110,31 +111,35 @@ public struct KeyPath(KeyPathElement[] elements)
     #endregion
 }
 
-public readonly struct KeyPathElement
+public readonly struct KeyPathElement(uint number, bool hardened)
 {
     internal const uint HardenedOffset = 0x80000000u;
 
     public static readonly KeyPathElement ZeroHard = new(0u, true);
     public static readonly KeyPathElement ZeroSoft = new(0u, false);
 
-    public readonly uint Number;
-    public readonly bool Hardened;
-    public readonly ReadOnlyMemory<byte> Serialized;
+    public readonly uint Number = hardened ? number + HardenedOffset : number;
+    public readonly bool Hardened = hardened;
 
-    public KeyPathElement(uint number, bool hardened)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Serialize(Span<byte> output)
     {
-        Number = hardened ? number + HardenedOffset : number;
-        Hardened = hardened;
+        BinaryPrimitives.WriteUInt32BigEndian(output, Number);
+    }
 
-        if (number < 100ul)
-        {
-            Serialized = hardened 
-                ? SerCache.HardCache.Span[(int)number] 
-                : SerCache.SoftCache.Span[(int)number];
-            return;
-        }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static implicit operator uint(KeyPathElement el)
+    {
+        return el.Number;
+    }
 
-        Serialized = SerializeUInt32(Number);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static implicit operator ReadOnlySpan<byte>(KeyPathElement el)
+    {
+        var alloc = new byte[4];
+        el.Serialize(alloc);
+
+        return alloc;
     }
 
     #region Equality
@@ -165,37 +170,4 @@ public readonly struct KeyPathElement
     }
 
     #endregion
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ReadOnlyMemory<byte> SerializeUInt32(in uint index)
-    {
-        Memory<byte> ser = new byte[4];
-        BinaryPrimitives.WriteUInt32BigEndian(ser.Span, index);
-
-        return ser;
-    }
 }
-
-public class KeyPathTree
-{
-    public KeyPathElement Element;
-    public KeyPathTree[]? Children;
-}
-
-public static class SerCache
-{
-    public static readonly ReadOnlyMemory<ReadOnlyMemory<byte>> SoftCache = FillCache(false);
-    public static readonly ReadOnlyMemory<ReadOnlyMemory<byte>> HardCache = FillCache(true);
-
-    private static ReadOnlyMemory<ReadOnlyMemory<byte>> FillCache(bool hard)
-    {
-        var result = new ReadOnlyMemory<byte>[100];
-        for (var i = 0u; i < 100u; i++)
-        {
-            result[i] = KeyPathElement.SerializeUInt32(hard ? i + KeyPathElement.HardenedOffset : i);
-        }
-
-        return new ReadOnlyMemory<ReadOnlyMemory<byte>>(result);
-    }
-}
-// WARNING! CURSED CODE!

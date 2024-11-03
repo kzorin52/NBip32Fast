@@ -24,13 +24,26 @@ public class Secp256K1HdKey : IHdKeyAlgo
 
         while (true)
         {
-            HMACSHA512.HashData(CurveBytes, seedCopy, seedCopy); // hope its okay
+            HMACSHA512.HashData(CurveBytes, seedCopy, seedCopy);
 
             var key = seedCopy[..32];
             var keyInt = new UInt256(key, true);
             if (keyInt > N || keyInt.IsZero) continue;
 
-            return new HdKey(key, seedCopy[32..]);
+            return new HdKey(key, seedCopy[32..]/*, []*/);
+        }
+    }
+
+    public void GetMasterKeyFromSeed(Span<byte> seed)
+    {
+        while (true)
+        {
+            HMACSHA512.HashData(CurveBytes, seed, seed);
+
+            var keyInt = new UInt256(seed[..32], true);
+            if (keyInt > N || keyInt.IsZero) continue;
+
+            return;
         }
     }
 
@@ -49,14 +62,11 @@ public class Secp256K1HdKey : IHdKeyAlgo
         {
             key.Reverse();
             var keyInt = new UInt256(key);
-
             UInt256.AddMod(keyInt, parentKey, N, out var res);
 
             if (keyInt > N || res.IsZero)
             {
-                hash = IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x01, cc);
-                key = hash[..32];
-                cc = hash[32..];
+                IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x01, cc, hash);
                 continue;
             }
 
@@ -65,9 +75,43 @@ public class Secp256K1HdKey : IHdKeyAlgo
         }
     }
 
+    public void Derive(HdKey parent, KeyPathElement index, Span<byte> result)
+    {
+        if (index.Hardened)
+            IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x00, parent.PrivateKey, result);
+        else
+            IHdKeyAlgo.Bip32SoftHash(parent.ChainCode, index, parent.PrivateKey, this, result);
+
+        var key = result[..32];
+        var cc = result[32..];
+
+        var parentKey = new UInt256(parent.PrivateKey, true);
+
+        while (true)
+        {
+            key.Reverse();
+            var keyInt = new UInt256(key);
+            UInt256.AddMod(keyInt, parentKey, N, out var res);
+
+            if (keyInt > N || res.IsZero)
+            {
+                IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x01, cc, result);
+                continue;
+            }
+
+            res.ToBigEndian(result[..32]);
+            return;
+        }
+    }
+
     public byte[] GetPublic(ReadOnlySpan<byte> privateKey)
     {
-        return SecP256k1.GetPublicKey(privateKey.ToArray(), true)!;
+        return SecP256k1.GetPublicKey(privateKey, true)!;
+    }
+
+    public void GetPublic(ReadOnlySpan<byte> privateKey, Span<byte> publicKey)
+    {
+        SecP256k1.GetPublicKey(privateKey, true, publicKey);
     }
 
     /* some my benchamrks:

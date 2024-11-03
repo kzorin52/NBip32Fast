@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using NBip32Fast.Interfaces;
 
 namespace NBip32Fast.Ed25519;
@@ -15,23 +16,27 @@ public class Ed25519HdKey : IHdKeyAlgo
     public HdKey GetMasterKeyFromSeed(ReadOnlySpan<byte> seed)
     {
         Span<byte> i = HMACSHA512.HashData(CurveBytes, seed);
-        return new HdKey(i[..32], i[32..]);
+        return new HdKey(i[..32], i[32..]/*, []*/);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetMasterKeyFromSeed(Span<byte> seed)
+    {
+        HMACSHA512.HashData(CurveBytes, seed, seed);
     }
 
     public byte[] GetPublic(ReadOnlySpan<byte> privateKey)
     {
-        Span<byte> output = stackalloc byte[32];
+        var output = new byte[32];
 
-        Org.BouncyCastle.Math.EC.Rfc8032.Ed25519.GeneratePublicKey(privateKey, output);
-        return output.ToArray();
-    }
-    
-    public Span<byte> GetPublicSpan(ReadOnlySpan<byte> privateKey)
-    {
-        Span<byte> output = new byte[32];
-
-        Org.BouncyCastle.Math.EC.Rfc8032.Ed25519.GeneratePublicKey(privateKey, output);
+        GetPublic(privateKey, output);
         return output;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void GetPublic(ReadOnlySpan<byte> privateKey, Span<byte> publicKey)
+    {
+        Org.BouncyCastle.Math.EC.Rfc8032.Ed25519.GeneratePublicKey(privateKey, publicKey);
     }
 
     public HdKey Derive(HdKey parent, KeyPathElement index)
@@ -43,7 +48,16 @@ public class Ed25519HdKey : IHdKeyAlgo
         }
 
         Span<byte> i = IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x0, parent.PrivateKey);
-        return new HdKey(i[..32], i[32..]);
+        return new HdKey(i[..32], i[32..]/*, parent.Elements.Add(index)*/);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Derive(HdKey parent, KeyPathElement index, Span<byte> result)
+    {
+        if (!index.Hardened)
+            throw new ArgumentException("Ed25519 soft derivation not yet implemented.", nameof(index));
+
+        IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x0, parent.PrivateKey, result);
     }
 
     /* some my benchamrks:

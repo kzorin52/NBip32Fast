@@ -11,7 +11,6 @@
  * Rule #7: If you have an IMemoryOwner<T> reference, you must at some point dispose of it or transfer its ownership (but not both).
  * Rule #8: If you have an IMemoryOwner<T> parameter in your API surface, you are accepting ownership of that instance.
  * Rule #9: If you're wrapping a synchronous p/invoke method, your API should accept Span<T> as a parameter.
- *      TODO: Secp256k1 lib wrapper with ReadOnlySpan<byte> P/Invoke GetPinnableReference instead of Nethermind's library (which copies bytes)
  * Rule #10: If you're wrapping an asynchronous p/invoke method, your API should accept Memory<T> as a parameter.
  */
 

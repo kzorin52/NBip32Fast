@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using NBip32Fast.Interfaces;
 using Nethermind.Int256;
 
@@ -32,6 +33,19 @@ public class NistP256HdKey : IHdKeyAlgo
             return new HdKey(key, seedCopy[32..]);
         }
     }
+    
+    public void GetMasterKeyFromSeed(Span<byte> seed)
+    {
+        while (true)
+        {
+            HMACSHA512.HashData(CurveBytes, seed, seed);
+
+            var keyInt = new UInt256(seed[..32], true);
+            if (keyInt > N || keyInt.IsZero) continue;
+
+            return;
+        }
+    }
 
     public HdKey Derive(HdKey parent, KeyPathElement index)
     {
@@ -52,9 +66,7 @@ public class NistP256HdKey : IHdKeyAlgo
 
             if (keyInt > N || res.IsZero)
             {
-                hash = IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x01, cc);
-                key = hash[..32];
-                cc = hash[32..];
+                IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x01, cc, hash);
                 continue;
             }
 
@@ -63,9 +75,53 @@ public class NistP256HdKey : IHdKeyAlgo
         }
     }
 
-    public byte[] GetPublic(ReadOnlySpan<byte> privateKey)
+    public void Derive(HdKey parent, KeyPathElement index, Span<byte> result)
     {
-        return NistP256Net.NistP256.GetPublicKey(privateKey);
+        if (index.Hardened)
+            IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x00, parent.PrivateKey, result);
+        else
+            IHdKeyAlgo.Bip32SoftHash(parent.ChainCode, index, parent.PrivateKey, this, result);
+
+        var key = result[..32];
+        var cc = result[32..];
+
+        var parentKey = new UInt256(parent.PrivateKey, true);
+
+        while (true)
+        {
+            key.Reverse();
+            var keyInt = new UInt256(key);
+            UInt256.AddMod(keyInt, parentKey, N, out var res);
+
+            if (keyInt > N || res.IsZero)
+            {
+                IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x01, cc, result);
+                continue;
+            }
+
+            res.ToBigEndian(result[..32]);
+            return;
+        }
+    }
+
+    public unsafe byte[] GetPublic(ReadOnlySpan<byte> privateKey)
+    {
+        var publicKey = new byte[33];
+
+        fixed (byte* secKey = privateKey, pubKey = publicKey)
+        {
+            NistP256Net.NistP256.private_to_public_key(secKey, pubKey);
+        }
+
+        return publicKey;
+    }
+
+    public unsafe void GetPublic(ReadOnlySpan<byte> privateKey, Span<byte> publicKey)
+    {
+        fixed (byte* secKey = privateKey, pubKey = publicKey)
+        {
+            NistP256Net.NistP256.private_to_public_key(secKey, pubKey);
+        }
     }
 
     /*
