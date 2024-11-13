@@ -8,7 +8,7 @@
 		<LangVersion>preview</LangVersion>
 		<Authors>Temnij</Authors>
 		<Description>
-			High perfomance BIP-32 HD key derivation library for .NET 8.
+			High perfomance BIP-32 HD key derivation library for .NET 9.
 			Supports SecP256k1, Ed25519 and NistP256 (SecP256r1)
 		</Description>
 		<PackageProjectUrl>https://github.com/kzorin52/NBip32Fast</PackageProjectUrl>
