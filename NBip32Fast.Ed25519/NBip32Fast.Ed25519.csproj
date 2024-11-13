@@ -26,9 +26,6 @@
 
 	<ItemGroup>
 	  <PackageReference Include="BouncyCastle.Cryptography" Version="2.5.0-beta.105" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\NBip32Fast\NBip32Fast.csproj" />
+	  <PackageReference Include="NBip32Fast" Version="2.0.0" />
 	</ItemGroup>
 </Project>
