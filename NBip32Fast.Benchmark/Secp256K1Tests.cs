@@ -1,6 +1,8 @@
 ﻿using System.Security.Cryptography;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
+using NBip32Fast;
+using NBip32Fast.Interfaces;
 
 [MemoryDiagnoser(false)]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
@@ -23,9 +25,12 @@ public class Secp256K1Tests
     }
 
     [Benchmark(Baseline = true)]
-    public byte[] NBip39FastKey()
+    public byte[] NBip32FastKey()
     {
-        return NBip32Fast.Secp256K1.Secp256K1HdKey.Instance.DerivePath(KeyPath, _seedSpan.Span).PrivateKey.ToArray();
+        var der = new Bip32Key();
+        NBip32Fast.Secp256K1.Secp256K1HdKey.Instance.DerivePath(KeyPath, _seedSpan.Span, ref der);
+
+        return der.Key.ToArray();
     }
 
     [Benchmark]
@@ -37,21 +42,17 @@ public class Secp256K1Tests
     /*
      // * Summary *
        
-       BenchmarkDotNet v0.13.12, Windows 11 (10.0.26200.5001)
-       Intel Core i9-14900K, 1 CPU, 32 logical and 24 physical cores
-       .NET SDK 9.0.100-preview.5.24258.8
-         [Host]     : .NET 9.0.0 (9.0.24.25601), X64 RyuJIT AVX2
-         DefaultJob : .NET 9.0.0 (9.0.24.25601), X64 RyuJIT AVX2
+       BenchmarkDotNet v0.14.1-nightly.20241027.193, Windows 11 (10.0.26100.2033)
+       Unknown processor
+       .NET SDK 10.0.100-alpha.1.24558.5
+         [Host]     : .NET 10.0.0 (10.0.24.55701), X64 RyuJIT AVX2
+         DefaultJob : .NET 10.0.0 (10.0.24.55701), X64 RyuJIT AVX2
        
        
-       | Method        | Mean      | Error    | StdDev   | Ratio | RatioSD | Gen0     | Gen1   | Allocated  | Alloc Ratio |
-       |-------------- |----------:|---------:|---------:|------:|--------:|---------:|-------:|-----------:|------------:|
-       | NBip39FastKey |  36.32 us | 0.332 us | 0.310 us |  1.00 |    0.00 |   0.0610 |      - |    2.04 KB |        1.00 |
-       | NBitcoinKey   | 409.24 us | 3.232 us | 2.865 us | 11.26 |    0.09 |   0.4883 |      - |    9.47 KB |        4.64 |
-       | NetezosKey    | 556.16 us | 7.795 us | 7.291 us | 15.31 |    0.22 | 166.9922 | 0.9766 | 3083.32 KB |    1,512.13 |
-       
-       // * Hints *
-       Outliers
-         Secp256K1Tests.NBitcoinKey: Default -> 1 outlier  was  removed (422.32 us)
+       | Method        | Mean      | Error    | StdDev   | Ratio | RatioSD | Allocated | Alloc Ratio |
+       |-------------- |----------:|---------:|---------:|------:|--------:|----------:|------------:|
+       | NBip32FastKey |  33.93 us | 0.239 us | 0.224 us |  1.00 |    0.01 |     608 B |        1.00 |
+       | NBitcoinKey   | 512.24 us | 1.668 us | 1.393 us | 15.10 |    0.10 |    9665 B |       15.90 |
+       | NetezosKey    | 655.89 us | 2.671 us | 2.367 us | 19.33 |    0.14 | 3200386 B |    5,263.79 |
      */
 }

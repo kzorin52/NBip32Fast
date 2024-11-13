@@ -1,14 +1,11 @@
-﻿using System.Buffers;
-using System.Buffers.Binary;
-using System.Numerics;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
+﻿using System.Text;
 
 namespace NBip32Fast;
 
 public struct KeyPath(KeyPathElement[] elements)
 {
+    public static readonly KeyPath Empty = new([]);
+
     public readonly ReadOnlyMemory<KeyPathElement> Elements = new(elements);
     private string? _str = null;
 
@@ -19,7 +16,7 @@ public struct KeyPath(KeyPathElement[] elements)
         return _str ??= ToStringPrivate();
     }
 
-    public readonly string ToStringPrivate()
+    private readonly string ToStringPrivate()
     {
         var len = Elements.Length * 5 + 2; // rough approximation
 
@@ -55,17 +52,17 @@ public struct KeyPath(KeyPathElement[] elements)
 
     #region From string
 
-    public static KeyPath? Parse(in string keyPathStr)
+    public static KeyPath Parse(string keyPathStr)
     {
         var keys = keyPathStr.Split('/').AsSpan();
-        if (keys.Length == 0) return null;
+        if (keys.Length == 0) return Empty;
         if (keyPathStr[0] == 'm') keys = keys[1..];
 
         var elements = new KeyPathElement[keys.Length];
         for (var i = 0; i < keys.Length; i++)
         {
             var key = keys[i];
-            var hardened = key.Last() == '\'';
+            var hardened = key[^1] == '\'';
 
             elements[i] = new KeyPathElement(uint.Parse(hardened ? key[..^1] : key), hardened);
         }
@@ -75,7 +72,7 @@ public struct KeyPath(KeyPathElement[] elements)
 
     public static implicit operator KeyPath(string str)
     {
-        return Parse(str)!.Value;
+        return Parse(str);
     }
 
     #endregion
@@ -104,67 +101,6 @@ public struct KeyPath(KeyPathElement[] elements)
     }
 
     public static bool operator !=(KeyPath left, KeyPath right)
-    {
-        return !(left == right);
-    }
-
-    #endregion
-}
-
-public readonly struct KeyPathElement(uint number, bool hardened)
-{
-    internal const uint HardenedOffset = 0x80000000u;
-
-    public static readonly KeyPathElement ZeroHard = new(0u, true);
-    public static readonly KeyPathElement ZeroSoft = new(0u, false);
-
-    public readonly uint Number = hardened ? number + HardenedOffset : number;
-    public readonly bool Hardened = hardened;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Serialize(Span<byte> output)
-    {
-        BinaryPrimitives.WriteUInt32BigEndian(output, Number);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator uint(KeyPathElement el)
-    {
-        return el.Number;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator ReadOnlySpan<byte>(KeyPathElement el)
-    {
-        var alloc = new byte[4];
-        el.Serialize(alloc);
-
-        return alloc;
-    }
-
-    #region Equality
-
-    public override bool Equals(object? obj)
-    {
-        return obj is KeyPathElement other && Equals(other);
-    }
-
-    public bool Equals(KeyPathElement other)
-    {
-        return Number == other.Number;
-    }
-
-    public override int GetHashCode()
-    {
-        return (int)Number;
-    }
-
-    public static bool operator ==(KeyPathElement left, KeyPathElement right)
-    {
-        return left.Equals(right);
-    }
-
-    public static bool operator !=(KeyPathElement left, KeyPathElement right)
     {
         return !(left == right);
     }

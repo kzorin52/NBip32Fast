@@ -1,13 +1,15 @@
 ﻿using System.Security.Cryptography;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
+using NBip32Fast;
+using NBip32Fast.Interfaces;
 
 [MemoryDiagnoser(false)]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class Ed25519Tests
 {
     private const string KeyPath = "m/44'/888'/0'/0'/0'";
-    private readonly ReadOnlyMemory<byte> _seedSpan;
+    public readonly ReadOnlyMemory<byte> _seedSpan;
     private readonly byte[] _seedBytes;
 
     public Ed25519Tests()
@@ -25,7 +27,10 @@ public class Ed25519Tests
     [Benchmark(Baseline = true)]
     public byte[] NBip32FastKey()
     {
-        return NBip32Fast.Ed25519.Ed25519HdKey.Instance.DerivePath(KeyPath, _seedSpan.Span).PrivateKey.ToArray();
+        var der = new Bip32Key();
+        NBip32Fast.Ed25519.Ed25519HdKey.Instance.DerivePath(KeyPath, _seedSpan.Span, ref der);
+
+        return der.Key.ToArray();
     }
 
     [Benchmark]
@@ -37,23 +42,17 @@ public class Ed25519Tests
     /*
        // * Summary *
        
-       BenchmarkDotNet v0.13.12, Windows 11 (10.0.26200.5001)
-       Intel Core i9-14900K, 1 CPU, 32 logical and 24 physical cores
-       .NET SDK 9.0.100-preview.5.24258.8
-         [Host]     : .NET 9.0.0 (9.0.24.25601), X64 RyuJIT AVX2
-         DefaultJob : .NET 9.0.0 (9.0.24.25601), X64 RyuJIT AVX2
+       BenchmarkDotNet v0.14.1-nightly.20241027.193, Windows 11 (10.0.26100.2033)
+       Unknown processor
+       .NET SDK 10.0.100-alpha.1.24558.5
+         [Host]     : .NET 10.0.0 (10.0.24.55701), X64 RyuJIT AVX2
+         DefaultJob : .NET 10.0.0 (10.0.24.55701), X64 RyuJIT AVX2
        
        
-       | Method        | Mean     | Error     | StdDev    | Ratio | RatioSD | Gen0   | Allocated | Alloc Ratio |
-       |-------------- |---------:|----------:|----------:|------:|--------:|-------:|----------:|------------:|
-       | NBip32FastKey | 4.272 us | 0.0255 us | 0.0226 us |  1.00 |    0.00 | 0.0839 |   1.59 KB |        1.00 |
-       | NetezosKey    | 5.404 us | 0.0434 us | 0.0362 us |  1.26 |    0.01 | 0.3204 |   5.99 KB |        3.76 |
-       | P3HdKey       | 5.939 us | 0.0783 us | 0.1045 us |  1.40 |    0.03 | 0.3433 |   6.33 KB |        3.97 |
-       
-       // * Hints *
-       Outliers
-         Ed25519Tests.NBip32FastKey: Default -> 1 outlier  was  removed (4.36 us)
-         Ed25519Tests.NetezosKey: Default    -> 2 outliers were removed (5.53 us, 5.69 us)
-         Ed25519Tests.P3HdKey: Default       -> 8 outliers were removed (9.89 us..10.27 us)
+       | Method        | Mean     | Error     | StdDev    | Ratio | Allocated | Alloc Ratio |
+       |-------------- |---------:|----------:|----------:|------:|----------:|------------:|
+       | NBip32FastKey | 4.527 us | 0.0217 us | 0.0193 us |  1.00 |     672 B |        1.00 |
+       | NetezosKey    | 6.041 us | 0.0258 us | 0.0242 us |  1.33 |    6136 B |        9.13 |
+       | P3HdKey       | 6.415 us | 0.0626 us | 0.0555 us |  1.42 |    6480 B |        9.64 |
      */
 }

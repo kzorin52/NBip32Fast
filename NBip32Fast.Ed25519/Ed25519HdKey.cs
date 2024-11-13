@@ -1,63 +1,40 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using NBip32Fast.Interfaces;
+using NBip32Fast.Utils;
 
 namespace NBip32Fast.Ed25519;
 
-public class Ed25519HdKey : IHdKeyAlgo
+public class Ed25519HdKey : IBip32Deriver
 {
-    public static readonly IHdKeyAlgo Instance = new Ed25519HdKey();
+    public static readonly IBip32Deriver Instance = new Ed25519HdKey();
     private static readonly byte[] CurveBytes = "ed25519 seed"u8.ToArray();
 
     private Ed25519HdKey()
     {
     }
 
-    public HdKey GetMasterKeyFromSeed(ReadOnlySpan<byte> seed)
-    {
-        Span<byte> i = HMACSHA512.HashData(CurveBytes, seed);
-        return new HdKey(i[..32], i[32..]/*, []*/);
-    }
+    public int PublicKeySize => 32;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void GetMasterKeyFromSeed(Span<byte> seed)
+    public void GetMasterKeyFromSeed(ReadOnlySpan<byte> seed, ref Bip32Key result)
     {
-        HMACSHA512.HashData(CurveBytes, seed, seed);
+        HMACSHA512.HashData(CurveBytes, seed, result.Span);
     }
 
-    public byte[] GetPublic(ReadOnlySpan<byte> privateKey)
+    public void Derive(ref Bip32Key parent, KeyPathElement index, ref Bip32Key result)
     {
-        var output = new byte[32];
+        if (!index.Hardened)
+            throw new ArgumentException("Ed25519 soft derivation not yet implemented.", nameof(index));
 
-        GetPublic(privateKey, output);
-        return output;
+        Bip32Utils.Bip32Hash(parent.ChainCode, index, 0x0, parent.Key, result.Span);
     }
+
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GetPublic(ReadOnlySpan<byte> privateKey, Span<byte> publicKey)
     {
         Org.BouncyCastle.Math.EC.Rfc8032.Ed25519.GeneratePublicKey(privateKey, publicKey);
-    }
-
-    public HdKey Derive(HdKey parent, KeyPathElement index)
-    {
-        if (!index.Hardened)
-        {
-            // TODO: Ed25519 soft derivation
-            throw new ArgumentException("Ed25519 soft derivation not yet implemented.", nameof(index));
-        }
-
-        Span<byte> i = IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x0, parent.PrivateKey);
-        return new HdKey(i[..32], i[32..]/*, parent.Elements.Add(index)*/);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Derive(HdKey parent, KeyPathElement index, Span<byte> result)
-    {
-        if (!index.Hardened)
-            throw new ArgumentException("Ed25519 soft derivation not yet implemented.", nameof(index));
-
-        IHdKeyAlgo.Bip32Hash(parent.ChainCode, index, 0x0, parent.PrivateKey, result);
     }
 
     /* some my benchamrks:
