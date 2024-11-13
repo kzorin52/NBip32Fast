@@ -54,14 +54,21 @@ public struct KeyPath(KeyPathElement[] elements)
 
     public static KeyPath Parse(string keyPathStr)
     {
-        var keys = keyPathStr.Split('/').AsSpan();
+        var strSpan = keyPathStr.AsSpan();
+
+        Span<Range> keys = stackalloc Range[strSpan.Count('/') + 1];
         if (keys.Length == 0) return Empty;
-        if (keyPathStr[0] == 'm') keys = keys[1..];
+
+        var written = strSpan.Split(keys, '/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (written <= 0) return Empty;
+
+        keys = keys[..written];
+        if (strSpan[0] == 'm') keys = keys[1..];
 
         var elements = new KeyPathElement[keys.Length];
         for (var i = 0; i < keys.Length; i++)
         {
-            var key = keys[i];
+            var key = strSpan[keys[i]];
             var hardened = key[^1] == '\'';
 
             elements[i] = new KeyPathElement(uint.Parse(hardened ? key[..^1] : key), hardened);

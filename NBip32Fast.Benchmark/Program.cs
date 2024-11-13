@@ -19,6 +19,13 @@ using NistP256Net;
 //Console.WriteLine(Convert.ToHexStringLower(test2.NBip32FastKey()));
 //Console.WriteLine(Convert.ToHexStringLower(test2.NetezosKey()));
 
+
+var tests = new ParseKeyPath();
+Console.WriteLine(tests.NBip32FastParse());
+Console.WriteLine(tests.NBitcoinParse());
+Console.WriteLine(tests.NetezosParse());
+
+Console.ReadLine();
 BenchmarkRunner.Run<ParseKeyPath>();
 
 

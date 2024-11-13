@@ -33,11 +33,10 @@ public class ParseKeyPath
          [Host]     : .NET 10.0.0 (10.0.24.55701), X64 RyuJIT AVX2
          DefaultJob : .NET 10.0.0 (10.0.24.55701), X64 RyuJIT AVX2
        
-       
-       | Method                 | Mean     | Error   | StdDev  | Ratio | RatioSD | Gen0   | Allocated | Alloc Ratio |
-       |----------------------- |---------:|--------:|--------:|------:|--------:|-------:|----------:|------------:|
-       | NBitcoinParse          | 247.6 ns | 3.63 ns | 3.22 ns |  2.40 |    0.03 | 0.0620 |    1168 B |        2.28 |
-       | NBip32FastParse        | 103.2 ns | 0.84 ns | 0.74 ns |  1.00 |    0.01 | 0.0272 |     512 B |        1.00 |
-       | NetezosPars            | 275.2 ns | 1.72 ns | 1.52 ns |  2.67 |    0.02 | 0.0625 |    1184 B |        2.31 |
+       | Method          | Mean      | Error    | StdDev   | Ratio | RatioSD | Gen0   | Allocated | Alloc Ratio |
+       |---------------- |----------:|---------:|---------:|------:|--------:|-------:|----------:|------------:|
+       | NBitcoinParse   | 237.33 ns | 0.886 ns | 0.829 ns |  3.14 |    0.01 | 0.0620 |    1168 B |       14.60 |
+       | NBip32FastParse |  75.65 ns | 0.124 ns | 0.116 ns |  1.00 |    0.00 | 0.0042 |      80 B |        1.00 |
+       | NetezosParse    | 284.29 ns | 1.468 ns | 1.301 ns |  3.76 |    0.02 | 0.0625 |    1184 B |       14.80 |
      */
 }
