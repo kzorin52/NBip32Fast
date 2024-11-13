@@ -8,19 +8,19 @@ public class ParseKeyPath
     private const string Path = "m/44'/888'/0'/0'/0/0/100";
 
     [Benchmark]
-    public string NBitcoinParseKeyPath()
+    public string NBitcoinParse()
     {
         return NBitcoin.KeyPath.Parse(Path).ToString();
     }
 
     [Benchmark(Baseline = true)]
-    public string NBip32FastParseKeyPath()
+    public string NBip32FastParse()
     {
         return NBip32Fast.KeyPath.Parse(Path).ToString();
     }
 
     [Benchmark]
-    public string NetezosParseKeyPath()
+    public string NetezosParse()
     {
         return Netezos.Keys.HDPath.Parse(Path).ToString();
     }
@@ -36,8 +36,8 @@ public class ParseKeyPath
        
        | Method                 | Mean     | Error   | StdDev  | Ratio | RatioSD | Gen0   | Allocated | Alloc Ratio |
        |----------------------- |---------:|--------:|--------:|------:|--------:|-------:|----------:|------------:|
-       | NBitcoinParseKeyPath   | 247.6 ns | 3.63 ns | 3.22 ns |  2.40 |    0.03 | 0.0620 |    1168 B |        2.28 |
-       | NBip32FastParseKeyPath | 103.2 ns | 0.84 ns | 0.74 ns |  1.00 |    0.01 | 0.0272 |     512 B |        1.00 |
-       | NetezosParseKeyPath    | 275.2 ns | 1.72 ns | 1.52 ns |  2.67 |    0.02 | 0.0625 |    1184 B |        2.31 |
+       | NBitcoinParse          | 247.6 ns | 3.63 ns | 3.22 ns |  2.40 |    0.03 | 0.0620 |    1168 B |        2.28 |
+       | NBip32FastParse        | 103.2 ns | 0.84 ns | 0.74 ns |  1.00 |    0.01 | 0.0272 |     512 B |        1.00 |
+       | NetezosPars            | 275.2 ns | 1.72 ns | 1.52 ns |  2.67 |    0.02 | 0.0625 |    1184 B |        2.31 |
      */
 }

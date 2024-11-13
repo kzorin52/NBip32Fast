@@ -32,29 +32,29 @@ for (var i = 0u; i < 5u; i++)
 ### SecP256K1
 | Method        | Mean      | Error    | StdDev   | Ratio | RatioSD | Allocated | Alloc Ratio |
 |-------------- |----------:|---------:|---------:|------:|--------:|----------:|------------:|
-| NBip32FastKey |  33.93 us | 0.239 us | 0.224 us |  1.00 |    0.01 |     608 B |        1.00 |
+| **NBip32FastKey** |  33.93 us | 0.239 us | 0.224 us |  1.00 |    0.01 |     608 B |        1.00 |
 | NBitcoinKey   | 512.24 us | 1.668 us | 1.393 us | 15.10 |    0.10 |    9665 B |       15.90 |
 | NetezosKey    | 655.89 us | 2.671 us | 2.367 us | 19.33 |    0.14 | 3200386 B |    5,263.79 |
 
 ### Ed25519
 | Method        | Mean     | Error     | StdDev    | Ratio | Allocated | Alloc Ratio |
 |-------------- |---------:|----------:|----------:|------:|----------:|------------:|
-| NBip32FastKey | 4.527 us | 0.0217 us | 0.0193 us |  1.00 |     672 B |        1.00 |
+| **NBip32FastKey** | 4.527 us | 0.0217 us | 0.0193 us |  1.00 |     672 B |        1.00 |
 | NetezosKey    | 6.041 us | 0.0258 us | 0.0242 us |  1.33 |    6136 B |        9.13 |
 | P3HdKey       | 6.415 us | 0.0626 us | 0.0555 us |  1.42 |    6480 B |        9.64 |
 
 ### NistP256
 | Method        | Mean       | Error    | StdDev   | Ratio | RatioSD | Allocated | Alloc Ratio |
 |-------------- |-----------:|---------:|---------:|------:|--------:|----------:|------------:|
-| NBip32FastKey |   167.2 us |  0.53 us |  0.49 us |  1.00 |    0.00 |     608 B |        1.00 |
+| **NBip32FastKey** |   167.2 us |  0.53 us |  0.49 us |  1.00 |    0.00 |     608 B |        1.00 |
 | NetezosKey    | 1,483.8 us | 11.86 us | 10.51 us |  8.87 |    0.07 | 7029510 B |   11,561.69 |
 
 ### Parse KeyPath
 | Method                 | Mean     | Error   | StdDev  | Ratio | RatioSD | Gen0   | Allocated | Alloc Ratio |
 |----------------------- |---------:|--------:|--------:|------:|--------:|-------:|----------:|------------:|
-| NBitcoinParseKeyPath   | 247.6 ns | 3.63 ns | 3.22 ns |  2.40 |    0.03 | 0.0620 |    1168 B |        2.28 |
-| NBip32FastParseKeyPath | 103.2 ns | 0.84 ns | 0.74 ns |  1.00 |    0.01 | 0.0272 |     512 B |        1.00 |
-| NetezosParseKeyPath    | 275.2 ns | 1.72 ns | 1.52 ns |  2.67 |    0.02 | 0.0625 |    1184 B |        2.31 |
+| **NBip32FastParse**    | 103.2 ns | 0.84 ns | 0.74 ns |  1.00 |    0.01 | 0.0272 |     512 B |        1.00 |
+| NBitcoinParse          | 247.6 ns | 3.63 ns | 3.22 ns |  2.40 |    0.03 | 0.0620 |    1168 B |        2.28 |
+| NetezosParse           | 275.2 ns | 1.72 ns | 1.52 ns |  2.67 |    0.02 | 0.0625 |    1184 B |        2.31 |
 
 [Benchmark code](https://github.com/kzorin52/NBip32Fast/blob/master/NBip32Fast.Benchmark/)
 
