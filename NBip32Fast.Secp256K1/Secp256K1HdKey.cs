@@ -1,8 +1,8 @@
 ﻿using System.Security.Cryptography;
 using NBip32Fast.Interfaces;
 using NBip32Fast.Utils;
-using Nethermind.Crypto;
 using Nethermind.Int256;
+using Temnij.Crypto;
 
 namespace NBip32Fast.Secp256K1;
 
