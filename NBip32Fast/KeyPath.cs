@@ -6,7 +6,7 @@ public struct KeyPath(KeyPathElement[] elements)
 {
     public static readonly KeyPath Empty = new([]);
 
-    public readonly ReadOnlyMemory<KeyPathElement> Elements = new(elements);
+    public readonly KeyPathElement[] Elements = elements;
     private string? _str = null;
 
     #region To string
@@ -28,10 +28,9 @@ public struct KeyPath(KeyPathElement[] elements)
 
         var last = Elements.Length - 1;
 
-        var elementsSpan = Elements.Span;
-        for (var i = 0; i < elementsSpan.Length; i++)
+        for (var i = 0; i < Elements.Length; i++)
         {
-            var element = elementsSpan[i];
+            var element = Elements[i];
             sb.Append((element.Hardened 
                 ? element.Number - KeyPathElement.HardenedOffset 
                 : element.Number).ToString());
@@ -89,15 +88,15 @@ public struct KeyPath(KeyPathElement[] elements)
     public readonly override bool Equals(object? obj)
     {
         return obj is KeyPath other
-               && Elements.Span.SequenceEqual(other.Elements.Span);
+               && Elements.AsSpan().SequenceEqual(other.Elements);
     }
 
     public readonly override int GetHashCode()
     {
-        if (Elements.Span.IsEmpty) return 0;
+        if (Elements.Length == 0) return -1;
 
         var hs = new HashCode();
-        for (var i = 0; i < Elements.Span.Length; i++) hs.Add(Elements.Span[i].Number);
+        for (var i = 0; i < Elements.Length; i++) hs.Add(Elements[i].Number);
 
         return hs.ToHashCode();
     }

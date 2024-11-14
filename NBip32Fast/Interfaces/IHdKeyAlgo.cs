@@ -37,6 +37,6 @@ public interface IBip32Deriver
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void DerivePath(in KeyPath path, ReadOnlySpan<byte> seed, ref Bip32Key result)
     {
-        DerivePath(path.Elements.Span, seed, ref result);
+        DerivePath(path.Elements, seed, ref result);
     }
 }

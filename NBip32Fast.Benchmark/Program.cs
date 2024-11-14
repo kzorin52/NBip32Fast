@@ -4,7 +4,6 @@ using NBip32Fast.Benchmark;
 using NBip32Fast.Ed25519;
 using NBip32Fast.NistP256;
 using NBip32Fast.Secp256K1;
-using Nethermind.Crypto;
 using NistP256Net;
 
 //var test = new Secp256K1Tests();
