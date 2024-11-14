@@ -37,9 +37,9 @@ for (var i = 0u; i < 5u; i++)
 ### SecP256K1
 | Method        | Mean      | Error    | StdDev   | Ratio | RatioSD | Allocated | Alloc Ratio |
 |-------------- |----------:|---------:|---------:|------:|--------:|----------:|------------:|
-| **NBip32FastKey** |  33.93 us | 0.239 us | 0.224 us |  1.00 |    0.01 |     608 B |        1.00 |
-| NBitcoinKey   | 512.24 us | 1.668 us | 1.393 us | 15.10 |    0.10 |    9665 B |       15.90 |
-| NetezosKey    | 655.89 us | 2.671 us | 2.367 us | 19.33 |    0.14 | 3200386 B |    5,263.79 |
+| **NBip32FastKey** |  32.49 us | 0.088 us | 0.083 us |  1.00 |    0.00 |     120 B |        1.00 |
+| NBitcoinKey   | 447.77 us | 1.211 us | 1.074 us | 13.78 |    0.05 |    9664 B |       80.53 |
+| NetezosKey    | 635.40 us | 1.744 us | 1.546 us | 19.55 |    0.07 | 3185946 B |   26,549.55 |
 
 ### Ed25519
 | Method        | Mean     | Error     | StdDev    | Ratio | Allocated | Alloc Ratio |
@@ -55,11 +55,11 @@ for (var i = 0u; i < 5u; i++)
 | NetezosKey    | 1,483.8 us | 11.86 us | 10.51 us |  8.87 |    0.07 | 7029510 B |   11,561.69 |
 
 ### Parse KeyPath
-| Method                 | Mean     | Error   | StdDev  | Ratio | RatioSD | Gen0   | Allocated | Alloc Ratio |
-|----------------------- |---------:|--------:|--------:|------:|--------:|-------:|----------:|------------:|
-| **NBip32FastParse**    | 103.2 ns | 0.84 ns | 0.74 ns |  1.00 |    0.01 | 0.0272 |     512 B |        1.00 |
-| NBitcoinParse          | 247.6 ns | 3.63 ns | 3.22 ns |  2.40 |    0.03 | 0.0620 |    1168 B |        2.28 |
-| NetezosParse           | 275.2 ns | 1.72 ns | 1.52 ns |  2.67 |    0.02 | 0.0625 |    1184 B |        2.31 |
+| Method          | Mean      | Error    | StdDev   | Ratio | RatioSD | Allocated | Alloc Ratio |
+|---------------- |----------:|---------:|---------:|------:|--------:|----------:|------------:|
+| **NBip32FastParse** |  73.83 ns | 0.227 ns | 0.212 ns |  1.00 |    0.00 |      80 B |        1.00 |
+| NBitcoinParse   | 243.23 ns | 1.687 ns | 1.317 ns |  3.29 |    0.02 |    1168 B |       14.60 |
+| NetezosParse    | 278.73 ns | 0.836 ns | 0.782 ns |  3.78 |    0.01 |    1184 B |       14.80 |
 
 [Benchmark code](https://github.com/kzorin52/NBip32Fast/blob/master/NBip32Fast.Benchmark/)
 

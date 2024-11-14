@@ -1,8 +1,10 @@
 ﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Order;
 
 namespace NBip32Fast.Benchmark;
 
-[MemoryDiagnoser]
+[MemoryDiagnoser(false)]
+[Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class ParseKeyPath
 {
     private const string Path = "m/44'/888'/0'/0'/0/0/100";
@@ -25,7 +27,7 @@ public class ParseKeyPath
         return Netezos.Keys.HDPath.Parse(Path).ToString();
     }
     /*
-     * * Summary *
+     // * Summary *
        
        BenchmarkDotNet v0.14.1-nightly.20241027.193, Windows 11 (10.0.26100.2033)
        Unknown processor
@@ -33,10 +35,11 @@ public class ParseKeyPath
          [Host]     : .NET 10.0.0 (10.0.24.55701), X64 RyuJIT AVX2
          DefaultJob : .NET 10.0.0 (10.0.24.55701), X64 RyuJIT AVX2
        
-       | Method          | Mean      | Error    | StdDev   | Ratio | RatioSD | Gen0   | Allocated | Alloc Ratio |
-       |---------------- |----------:|---------:|---------:|------:|--------:|-------:|----------:|------------:|
-       | NBitcoinParse   | 237.33 ns | 0.886 ns | 0.829 ns |  3.14 |    0.01 | 0.0620 |    1168 B |       14.60 |
-       | NBip32FastParse |  75.65 ns | 0.124 ns | 0.116 ns |  1.00 |    0.00 | 0.0042 |      80 B |        1.00 |
-       | NetezosParse    | 284.29 ns | 1.468 ns | 1.301 ns |  3.76 |    0.02 | 0.0625 |    1184 B |       14.80 |
+       
+       | Method          | Mean      | Error    | StdDev   | Ratio | RatioSD | Allocated | Alloc Ratio |
+       |---------------- |----------:|---------:|---------:|------:|--------:|----------:|------------:|
+       | NBip32FastParse |  73.83 ns | 0.227 ns | 0.212 ns |  1.00 |    0.00 |      80 B |        1.00 |
+       | NBitcoinParse   | 243.23 ns | 1.687 ns | 1.317 ns |  3.29 |    0.02 |    1168 B |       14.60 |
+       | NetezosParse    | 278.73 ns | 0.836 ns | 0.782 ns |  3.78 |    0.01 |    1184 B |       14.80 |
      */
 }

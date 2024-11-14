@@ -51,8 +51,8 @@ public class Secp256K1Tests
        
        | Method        | Mean      | Error    | StdDev   | Ratio | RatioSD | Allocated | Alloc Ratio |
        |-------------- |----------:|---------:|---------:|------:|--------:|----------:|------------:|
-       | NBip32FastKey |  33.93 us | 0.239 us | 0.224 us |  1.00 |    0.01 |     608 B |        1.00 |
-       | NBitcoinKey   | 512.24 us | 1.668 us | 1.393 us | 15.10 |    0.10 |    9665 B |       15.90 |
-       | NetezosKey    | 655.89 us | 2.671 us | 2.367 us | 19.33 |    0.14 | 3200386 B |    5,263.79 |
+       | NBip32FastKey |  32.49 us | 0.088 us | 0.083 us |  1.00 |    0.00 |     120 B |        1.00 |
+       | NBitcoinKey   | 447.77 us | 1.211 us | 1.074 us | 13.78 |    0.05 |    9664 B |       80.53 |
+       | NetezosKey    | 635.40 us | 1.744 us | 1.546 us | 19.55 |    0.07 | 3185946 B |   26,549.55 |
      */
 }

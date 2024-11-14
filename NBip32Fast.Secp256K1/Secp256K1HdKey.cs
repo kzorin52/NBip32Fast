@@ -1,7 +1,6 @@
 ﻿using System.Security.Cryptography;
 using NBip32Fast.Interfaces;
 using NBip32Fast.Utils;
-using Nethermind.Int256;
 using Temnij.Crypto;
 
 namespace NBip32Fast.Secp256K1;
@@ -10,9 +9,6 @@ public class Secp256K1HdKey : IBip32Deriver
 {
     public static readonly IBip32Deriver Instance = new Secp256K1HdKey();
     private static readonly byte[] CurveBytes = "Bitcoin seed"u8.ToArray();
-
-    private static readonly UInt256 N =
-        UInt256.Parse("115792089237316195423570985008687907852837564279074904382605163141518161494337");
 
     private Secp256K1HdKey()
     {
@@ -29,23 +25,17 @@ public class Secp256K1HdKey : IBip32Deriver
         while (true)
         {
             HMACSHA512.HashData(CurveBytes, seedCopy, seedCopy);
-
-            var keyInt = new UInt256(key, true);
-            if (keyInt > N || keyInt.IsZero) continue;
-
-            return;
+            if (SecP256k1Native.VerifyPrivateKey(key)) return;
         }
     }
 
     public void Derive(ref Bip32Key parent, KeyPathElement index, ref Bip32Key result)
     {
-        var parentChainCode = parent.Span != result.Span
-            ? parent.Span[32..]
-            : stackalloc byte[32];
+        var parentSpan = parent.Span != result.Span
+            ? parent.Span
+            : stackalloc byte[64];
+        if (parent.Span == result.Span) parent.Span.CopyTo(parentSpan);
 
-        if (parent.Span == result.Span) parent.ChainCode.CopyTo(parentChainCode);
-
-        var parentKey = new UInt256(parent.Key, true);
         var resultSpan = result.Span;
 
         if (index.Hardened)
@@ -56,27 +46,18 @@ public class Secp256K1HdKey : IBip32Deriver
         var key = resultSpan[..32];
         var cc = resultSpan[32..];
 
-
         while (true)
         {
-            key.Reverse();
-            var keyInt = new UInt256(key);
-            UInt256.AddMod(keyInt, parentKey, N, out var res);
+            if (SecP256k1Native.VerifyPrivateKey(key)
+                && SecP256k1Native.Tweak(key, parentSpan[..32], SecP256k1Native.KeyType.PrivateKey, SecP256k1Native.TweakMode.Add)) return;
 
-            if (keyInt > N || res.IsZero)
-            {
-                Bip32Utils.Bip32Hash(parentChainCode, index, 0x01, cc, resultSpan);
-                continue;
-            }
-
-            res.ToBigEndian(resultSpan[..32]);
-            return;
+            Bip32Utils.Bip32Hash(parentSpan[32..], index, 0x01, cc, resultSpan);
         }
     }
 
     public void GetPublic(ReadOnlySpan<byte> privateKey, Span<byte> publicKey)
     {
-        SecP256k1.GetPublicKey(privateKey, true, publicKey);
+        SecP256k1.GetPublicKey(publicKey, privateKey, SecP256k1Native.ECType.Compressed);
     }
 
     /* some my benchamrks:
