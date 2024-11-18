@@ -26,7 +26,7 @@ public class DerivationTest
     public void TestBip32Ed25519()
     {
         var der1 = new Bip32Key();
-        Ed25519.Ed25519HdKey.Instance.DerivePath(Case1Ed25519.Path, TestCase.Seed.Span, ref der1);
+        Ed25519.Ed25519HdKey.Instance.DerivePath(Case1Ed25519.Path.Elements, TestCase.Seed.Span, ref der1);
 
         Assert.IsTrue(der1.Key.SequenceEqual(Case1Ed25519.Key.Span));
         Assert.IsTrue(der1.ChainCode.SequenceEqual(Case1Ed25519.ChainCode.Span));
@@ -36,7 +36,7 @@ public class DerivationTest
     public void TestBip32Secp256K1()
     {
         var der1 = new Bip32Key();
-        Secp256K1.Secp256K1HdKey.Instance.DerivePath(Case1SecP256K1.Path, TestCase.Seed.Span, ref der1);
+        Secp256K1.Secp256K1HdKey.Instance.DerivePath(Case1SecP256K1.Path.Elements, TestCase.Seed.Span, ref der1);
 
         Assert.IsTrue(der1.Key.SequenceEqual(Case1SecP256K1.Key.Span));
         Assert.IsTrue(der1.ChainCode.SequenceEqual(Case1SecP256K1.ChainCode.Span));
@@ -46,7 +46,7 @@ public class DerivationTest
     public void TestBip32NistP256()
     {
         var der1 = new Bip32Key();
-        NistP256.NistP256HdKey.Instance.DerivePath(Case1NistP256.Path, TestCase.Seed.Span, ref der1);
+        NistP256.NistP256HdKey.Instance.DerivePath(Case1NistP256.Path.Elements, TestCase.Seed.Span, ref der1);
 
         Assert.IsTrue(der1.Key.SequenceEqual(Case1NistP256.Key.Span));
         Assert.IsTrue(der1.ChainCode.SequenceEqual(Case1NistP256.ChainCode.Span));

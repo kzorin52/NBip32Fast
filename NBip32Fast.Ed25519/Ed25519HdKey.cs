@@ -22,12 +22,12 @@ public class Ed25519HdKey : IBip32Deriver
         HMACSHA512.HashData(CurveBytes, seed, result.Span);
     }
 
-    public void Derive(ref Bip32Key parent, KeyPathElement index, ref Bip32Key result)
+    public void Derive(ref readonly Bip32Key parent, ref readonly KeyPathElement index, ref Bip32Key result)
     {
         if (!index.Hardened)
             throw new ArgumentException("Ed25519 soft derivation not yet implemented.", nameof(index));
 
-        Bip32Utils.Bip32Hash(parent.ChainCode, index, 0x0, parent.Key, result.Span);
+        Bip32Utils.Bip32Hash(parent.ChainCode, in index, 0x0, parent.Key, result.Span);
     }
 
 

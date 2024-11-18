@@ -29,7 +29,7 @@ public class Secp256K1HdKey : IBip32Deriver
         }
     }
 
-    public void Derive(ref Bip32Key parent, KeyPathElement index, ref Bip32Key result)
+    public void Derive(ref readonly Bip32Key parent, ref readonly KeyPathElement index, ref Bip32Key result)
     {
         var parentSpan = parent.Span != result.Span
             ? parent.Span
@@ -39,9 +39,9 @@ public class Secp256K1HdKey : IBip32Deriver
         var resultSpan = result.Span;
 
         if (index.Hardened)
-            Bip32Utils.Bip32Hash(parent.ChainCode, index, 0x00, parent.Key, resultSpan);
+            Bip32Utils.Bip32Hash(parent.ChainCode, in index, 0x00, parent.Key, resultSpan);
         else
-            Bip32Utils.Bip32SoftHash(parent.ChainCode, index, parent.Key, this, resultSpan);
+            Bip32Utils.Bip32SoftHash(parent.ChainCode, in index, parent.Key, this, resultSpan);
 
         var key = resultSpan[..32];
         var cc = resultSpan[32..];
@@ -51,7 +51,7 @@ public class Secp256K1HdKey : IBip32Deriver
             if (SecP256k1Native.VerifyPrivateKey(key)
                 && SecP256k1Native.Tweak(key, parentSpan[..32], SecP256k1Native.KeyType.PrivateKey, SecP256k1Native.TweakMode.Add)) return;
 
-            Bip32Utils.Bip32Hash(parentSpan[32..], index, 0x01, cc, resultSpan);
+            Bip32Utils.Bip32Hash(parentSpan[32..], in index, 0x01, cc, resultSpan);
         }
     }
 
