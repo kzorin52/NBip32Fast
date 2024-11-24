@@ -23,7 +23,7 @@ public class Secp256R1Tests
     public byte[] NBip32FastKey()
     {
         var der = new Bip32Key();
-        NBip32Fast.NistP256.NistP256HdKey.Instance.DerivePath(KeyPath, _seedSpan.Span, ref der);
+        NBip32Fast.NistP256.NistP256HdKey.Instance.DerivePath(NBip32Fast.KeyPath.Parse(KeyPath).Elements, _seedSpan.Span, ref der);
 
         return der.Key.ToArray();
     }

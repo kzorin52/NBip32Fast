@@ -6,12 +6,12 @@ using NBip32Fast.NistP256;
 using NBip32Fast.Secp256K1;
 using NistP256Net;
 
-//var test = new Secp256K1Tests();
-//Console.WriteLine(Convert.ToHexStringLower(test.NBitcoinKey()));
-//Console.WriteLine(Convert.ToHexStringLower(test.NBip39FastKey()));
-//Console.WriteLine(Convert.ToHexStringLower(test.NetezosKey()));
+var test = new Secp256K1Tests();
+Console.WriteLine(Convert.ToHexStringLower(test.NBitcoinKey()));
+Console.WriteLine(Convert.ToHexStringLower(test.NBip32FastKey()));
+Console.WriteLine(Convert.ToHexStringLower(test.NetezosKey()));
 
-//BenchmarkRunner.Run<Secp256K1Tests>();
+BenchmarkRunner.Run<Secp256K1Tests>();
 
 //var test2 = new Ed25519Tests();
 //Console.WriteLine(Convert.ToHexStringLower(test2.P3HdKey()));
@@ -19,13 +19,13 @@ using NistP256Net;
 //Console.WriteLine(Convert.ToHexStringLower(test2.NetezosKey()));
 
 
-var tests = new ParseKeyPath();
-Console.WriteLine(tests.NBip32FastParse());
-Console.WriteLine(tests.NBitcoinParse());
-Console.WriteLine(tests.NetezosParse());
+//var tests = new ParseKeyPath();
+//Console.WriteLine(tests.NBip32FastParse());
+//Console.WriteLine(tests.NBitcoinParse());
+//Console.WriteLine(tests.NetezosParse());
 
-Console.ReadLine();
-BenchmarkRunner.Run<ParseKeyPath>();
+//Console.ReadLine();
+//BenchmarkRunner.Run<ParseKeyPath>();
 
 
 //var test3 = new Secp256R1Tests();

@@ -28,7 +28,7 @@ public class Ed25519Tests
     public byte[] NBip32FastKey()
     {
         var der = new Bip32Key();
-        NBip32Fast.Ed25519.Ed25519HdKey.Instance.DerivePath(KeyPath, _seedSpan.Span, ref der);
+        NBip32Fast.Ed25519.Ed25519HdKey.Instance.DerivePath(NBip32Fast.KeyPath.Parse(KeyPath).Elements, _seedSpan.Span, ref der);
 
         return der.Key.ToArray();
     }

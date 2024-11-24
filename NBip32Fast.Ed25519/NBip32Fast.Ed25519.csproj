@@ -25,10 +25,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="BouncyCastle.Cryptography" Version="2.5.0-beta.105" />
-	</ItemGroup>
-
-	<ItemGroup>
+	  <ProjectReference Include="..\..\..\reposCat\bc-csharp\crypto\src\BouncyCastle.Crypto.csproj" />
 	  <ProjectReference Include="..\NBip32Fast\NBip32Fast.csproj" />
 	</ItemGroup>
 </Project>
