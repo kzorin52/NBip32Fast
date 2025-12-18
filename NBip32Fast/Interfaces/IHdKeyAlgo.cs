@@ -37,4 +37,11 @@ public interface IBip32Deriver
         GetMasterKeyFromSeed(seed, ref result);
         DeriveFromMasterKey(path, ref result, ref result);
     }
+    
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void DerivePath(KeyPath path, ReadOnlySpan<byte> seed, ref Bip32Key result)
+    {
+        DerivePath(path.Elements, seed, ref result);
+    }
 }

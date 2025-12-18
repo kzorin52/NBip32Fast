@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<OutputType>Library</OutputType>
-		<TargetFramework>net9.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>preview</LangVersion>
@@ -16,7 +16,7 @@
 	<PropertyGroup>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<Version>2.0.3</Version>
+		<Version>2.0.4</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -25,7 +25,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Temnij.Crypto.SecP256k1" Version="1.4.0" />
+		<PackageReference Include="Temnij.Crypto.SecP256k1" Version="1.5.0" />
 	</ItemGroup>
 
 	<ItemGroup>
