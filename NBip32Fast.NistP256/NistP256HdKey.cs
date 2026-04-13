@@ -8,7 +8,7 @@ namespace NBip32Fast.NistP256;
 public class NistP256HdKey : IBip32Deriver
 {
     public static readonly IBip32Deriver Instance = new NistP256HdKey();
-    private static readonly byte[] CurveBytes = "Nist256p1 seed"u8.ToArray();
+    private static ReadOnlySpan<byte> CurveBytes => "Nist256p1 seed"u8;
 
     private static readonly UInt256 N =
         UInt256.Parse("115792089210356248762697446949407573529996955224135760342422259061068512044369");
@@ -22,52 +22,60 @@ public class NistP256HdKey : IBip32Deriver
     public void GetMasterKeyFromSeed(ReadOnlySpan<byte> seed, ref Bip32Key result)
     {
         var resultSpan = result.Span;
-        seed.CopyTo(resultSpan);
+
+        // Первая итерация: hash именно seed, любой длины
+        HMACSHA512.HashData(CurveBytes, seed, resultSpan);
 
         while (true)
         {
-            HMACSHA512.HashData(CurveBytes, resultSpan, resultSpan);
+            var keyInt = new UInt256(resultSpan[..32], isBigEndian: true);
+            if (keyInt < N && !keyInt.IsZero) return;
+            
+            // ReSharper disable once StackAllocInsideLoop because of extremely low probability of hash to be >N
+            // probablity is around 2^-128
+            #pragma warning disable CA2014
+            Span<byte> retryData = stackalloc byte[33];
+            
+            // SLIP-0010 retry: HMAC(Curve, 0x01 || IR)
+            retryData[0] = 0x01;
+            resultSpan[32..].CopyTo(retryData[1..]);
 
-            var keyInt = new UInt256(resultSpan[..32], true);
-            if (keyInt > N || keyInt.IsZero) continue;
-
-            return;
+            HMACSHA512.HashData(CurveBytes, retryData, resultSpan);
         }
     }
 
-    public void Derive(ref readonly Bip32Key parent, ref readonly KeyPathElement index, ref Bip32Key result)
+    public void Derive(ref readonly Bip32Key parent, KeyPathElement index, ref Bip32Key result)
     {
-        var parentChainCode = parent.Span != result.Span
+        var parentChainCode = !parent.Span.Overlaps(result.Span)
             ? parent.Span[32..]
             : stackalloc byte[32];
 
-        if (parent.Span == result.Span) parent.ChainCode.CopyTo(parentChainCode);
+        if (parent.Span.Overlaps(result.Span))
+            parent.ChainCode.CopyTo(parentChainCode);
 
-        var parentKey = new UInt256(parent.Key, true);
+        var parentKey = new UInt256(parent.Key, isBigEndian: true);
         var resultSpan = result.Span;
 
         if (index.Hardened)
-            Bip32Utils.Bip32Hash(parent.ChainCode, in index, 0x00, parent.Key, resultSpan);
+            Bip32Utils.Bip32Hash(parent.ChainCode, index, 0x00, parent.Key, resultSpan);
         else
-            Bip32Utils.Bip32SoftHash(parent.ChainCode, in index, parent.Key, this, resultSpan);
+            Bip32Utils.Bip32SoftHash(parent.ChainCode, index, parent.Key, this, resultSpan);
 
         var key = resultSpan[..32];
-        var cc = resultSpan[32..];
-
+        var cc  = resultSpan[32..];
 
         while (true)
         {
-            key.Reverse();
-            var keyInt = new UInt256(key);
+            var keyInt = new UInt256(key, isBigEndian: true);
             UInt256.AddMod(keyInt, parentKey, N, out var res);
 
-            if (keyInt > N || res.IsZero)
+            if (keyInt >= N || res.IsZero)
             {
-                Bip32Utils.Bip32Hash(parentChainCode, in index, 0x01, cc, resultSpan);
+                Bip32Utils.Bip32Hash(parentChainCode, index, 0x01, cc, resultSpan);
                 continue;
             }
 
-            res.ToBigEndian(resultSpan[..32]);
+            res.ToBigEndian(key);
             return;
         }
     }

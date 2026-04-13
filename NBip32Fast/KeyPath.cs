@@ -1,8 +1,10 @@
-﻿using System.Text;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace NBip32Fast;
 
-public struct KeyPath(KeyPathElement[] elements)
+public struct KeyPath(KeyPathElement[] elements) : IEquatable<KeyPath>
 {
     public static readonly KeyPath Empty = new([]);
 
@@ -18,25 +20,26 @@ public struct KeyPath(KeyPathElement[] elements)
 
     private readonly string ToStringPrivate()
     {
-        var len = Elements.Length * 5 + 2; // rough approximation
+        if (Elements.Length == 0) return "m";
 
-        var sb = len <= 1024 
-            ? new ValueStringBuilder(stackalloc char[len]) 
-            : new ValueStringBuilder(len);
+        var maxLen = 2 + Elements.Length * 12;
+
+        var sb = maxLen <= 1024
+            ? new ValueStringBuilder(stackalloc char[maxLen])
+            : new ValueStringBuilder(maxLen);
 
         sb.Append("m/");
 
-        var last = Elements.Length - 1;
-
         for (var i = 0; i < Elements.Length; i++)
         {
-            var element = Elements[i];
-            sb.Append((element.Hardened 
-                ? element.Number - KeyPathElement.HardenedOffset 
-                : element.Number).ToString());
-            if (element.Hardened)
+            if (i != 0) sb.Append('/');
+
+            var num = Elements[i].Number;
+
+            sb.AppendSpanFormattable(num & 0x7FFFFFFFu);
+
+            if (num >= KeyPathElement.HardenedOffset)
                 sb.Append('\'');
-            if (i != last) sb.Append('/');
         }
 
         return sb.ToString();
@@ -53,27 +56,49 @@ public struct KeyPath(KeyPathElement[] elements)
 
     public static KeyPath Parse(string keyPathStr)
     {
-        var strSpan = keyPathStr.AsSpan();
-
-        Span<Range> keys = stackalloc Range[strSpan.Count('/') + 1];
-        if (keys.Length == 0) return Empty;
-
-        var written = strSpan.Split(keys, '/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        if (written <= 0) return Empty;
-
-        keys = keys[..written];
-        if (strSpan[0] == 'm') keys = keys[1..];
-
-        var elements = new KeyPathElement[keys.Length];
-        for (var i = 0; i < keys.Length; i++)
+        var span = keyPathStr.AsSpan();
+        
+        switch (span)
         {
-            var key = strSpan[keys[i]];
-            var hardened = key[^1] == '\'';
-
-            elements[i] = new KeyPathElement(uint.Parse(hardened ? key[..^1] : key), hardened);
+            case ['m', '/', ..]:
+                span = span[2..];
+                break;
+            case ['m']:
+                return new KeyPath([]) { _str = keyPathStr };
         }
 
+        if (span.IsEmpty)
+            return new KeyPath([]) { _str = keyPathStr };
+
+        var elements = new KeyPathElement[span.Count('/') + 1];
+        var i = 0;
+        
+        foreach (var range in span.Split('/'))
+        {
+            var segment = span[range];
+            if (segment.IsEmpty) continue;
+
+            var hardened = segment[^1] is '\'';
+            elements[i++] = new KeyPathElement(
+                ParseUInt32(hardened ? segment[..^1] : segment),
+                hardened
+            );
+        }
+
+        // e.g. "m/44'//0'"
+        if (i != elements.Length)
+            elements = elements.AsSpan(0, i).ToArray();
+
         return new KeyPath(elements) { _str = keyPathStr };
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static uint ParseUInt32(ReadOnlySpan<char> span)
+    {
+        var result = 0u;
+        foreach (var c in span)
+            result = result * 10 + (uint)(c - '0');
+        return result;
     }
 
     public static implicit operator KeyPath(string str)
@@ -85,31 +110,34 @@ public struct KeyPath(KeyPathElement[] elements)
 
     #region Equality
 
-    public readonly override bool Equals(object? obj)
+    [OverloadResolutionPriority(1)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool Equals(ref readonly KeyPath other)
     {
-        return obj is KeyPath other
-               && Elements.AsSpan().SequenceEqual(other.Elements);
+        if (_str != null && other._str != null) return _str == other._str;
+        
+        return MemoryMarshal.AsBytes(Elements.AsSpan()).SequenceEqual(MemoryMarshal.AsBytes(other.Elements.AsSpan()));
     }
+
+    bool IEquatable<KeyPath>.Equals(KeyPath other)
+    {
+        return Equals(ref other);
+    }
+    
+    public readonly override bool Equals(object? obj) => obj is KeyPath other && Equals(in other);
 
     public readonly override int GetHashCode()
     {
-        if (Elements.Length == 0) return -1;
-
-        var hs = new HashCode();
-        for (var i = 0; i < Elements.Length; i++) hs.Add(Elements[i].Number);
-
-        return hs.ToHashCode();
+        var hc = new HashCode();
+        hc.AddBytes(MemoryMarshal.AsBytes(Elements.AsSpan()));
+        return hc.ToHashCode();
     }
 
-    public static bool operator ==(KeyPath left, KeyPath right)
-    {
-        return left.Equals(right);
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator ==(in KeyPath left, in KeyPath right) => left.Equals(in right);
 
-    public static bool operator !=(KeyPath left, KeyPath right)
-    {
-        return !(left == right);
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool operator !=(in KeyPath left, in KeyPath right) => !left.Equals(in right);
 
     #endregion
 }

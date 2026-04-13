@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/Solution items/">
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="NBip32Fast.Benchmark/NBip32Fast.Benchmark.csproj" />
+  <Project Path="NBip32Fast.Ed25519/NBip32Fast.Ed25519.csproj" />
+  <Project Path="NBip32Fast.NistP256/NBip32Fast.NistP256.csproj" />
+  <Project Path="NBip32Fast.Secp256K1/NBip32Fast.Secp256K1.csproj" />
+  <Project Path="NBip32Fast.Tests/NBip32Fast.Tests.csproj" />
+  <Project Path="NBip32Fast/NBip32Fast.csproj" />
+</Solution>

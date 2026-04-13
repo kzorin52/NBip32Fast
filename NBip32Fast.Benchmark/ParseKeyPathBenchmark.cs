@@ -5,7 +5,7 @@ namespace NBip32Fast.Benchmark;
 
 [MemoryDiagnoser(false)]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
-public class ParseKeyPath
+public class ParseKeyPathBenchmark
 {
     private const string Path = "m/44'/888'/0'/0'/0/0/100";
 

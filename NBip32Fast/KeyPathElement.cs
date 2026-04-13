@@ -1,9 +1,11 @@
 ﻿using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace NBip32Fast;
 
-public readonly struct KeyPathElement(uint number, bool hardened)
+[StructLayout(LayoutKind.Sequential)]
+public readonly struct KeyPathElement(uint number, bool hardened) : IEquatable<KeyPathElement>
 {
     internal const uint HardenedOffset = 0x80000000u;
 
@@ -11,7 +13,13 @@ public readonly struct KeyPathElement(uint number, bool hardened)
     public static readonly KeyPathElement ZeroSoft = new(0u, false);
 
     public readonly uint Number = hardened ? number + HardenedOffset : number;
-    public readonly bool Hardened = hardened;
+
+    public bool Hardened
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => (Number & HardenedOffset) != 0;
+    }
+
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Serialize(Span<byte> output)
@@ -20,10 +28,16 @@ public readonly struct KeyPathElement(uint number, bool hardened)
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static KeyPathElement Hard(uint num) => new(num, true);
+    public static KeyPathElement Hard(uint num)
+    {
+        return new KeyPathElement(num, true);
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static KeyPathElement Soft(uint num) => new(num, false);
+    public static KeyPathElement Soft(uint num)
+    {
+        return new KeyPathElement(num, false);
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static implicit operator uint(KeyPathElement el)
@@ -47,7 +61,7 @@ public readonly struct KeyPathElement(uint number, bool hardened)
         return obj is KeyPathElement other && Equals(other);
     }
 
-    public bool Equals(KeyPathElement other)
+    bool IEquatable<KeyPathElement>.Equals(KeyPathElement other)
     {
         return Number == other.Number;
     }

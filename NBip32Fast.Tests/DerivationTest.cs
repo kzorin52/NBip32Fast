@@ -53,7 +53,7 @@ public class DerivationTest
     }
 }
 
-internal readonly struct TestCase(in string path, in string keyHex, in string ccHex)
+internal readonly struct TestCase(string path, string keyHex, string ccHex)
 {
     internal static readonly ReadOnlyMemory<byte> Seed = Convert.FromHexString(
         "e4a964f4973ce5750a6a5a5126e8258442c197b2e71b683ccba58688f21242eae1b0f12bee21d6e983d4a5c61f081bf3f0669546eb576dec1b22ec8d481b00fb");

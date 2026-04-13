@@ -6,8 +6,7 @@ namespace NBip32Fast.Utils;
 
 public static class Bip32Utils
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Bip32Hash(ReadOnlySpan<byte> chainCode, ref readonly KeyPathElement index, ReadOnlySpan<byte> data, Span<byte> output)
+    public static void Bip32Hash(ReadOnlySpan<byte> chainCode, KeyPathElement index, ReadOnlySpan<byte> data, Span<byte> output)
     {
         Span<byte> hmacAlloc = stackalloc byte[data.Length + 4];
         data.CopyTo(hmacAlloc.Slice(0, data.Length));
@@ -16,8 +15,7 @@ public static class Bip32Utils
         HMACSHA512.HashData(chainCode, hmacAlloc, output);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Bip32SoftHash(ReadOnlySpan<byte> chainCode, ref readonly KeyPathElement index, ReadOnlySpan<byte> privateKey, IBip32Deriver keyAlgo, Span<byte> output)
+    public static void Bip32SoftHash(ReadOnlySpan<byte> chainCode, KeyPathElement index, ReadOnlySpan<byte> privateKey, IBip32Deriver keyAlgo, Span<byte> output)
     {
         var pubSize = keyAlgo.PublicKeySize;
 
@@ -28,9 +26,8 @@ public static class Bip32Utils
         HMACSHA512.HashData(chainCode, hmacAlloc, output);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Bip32Hash(ReadOnlySpan<byte> chainCode,
-        ref readonly KeyPathElement index,
+        KeyPathElement index,
         byte prefix,
         ReadOnlySpan<byte> data,
         Span<byte> output)

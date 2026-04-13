@@ -8,50 +8,62 @@ namespace NBip32Fast.Secp256K1;
 public class Secp256K1HdKey : IBip32Deriver
 {
     public static readonly IBip32Deriver Instance = new Secp256K1HdKey();
-    private static readonly byte[] CurveBytes = "Bitcoin seed"u8.ToArray();
+    private static ReadOnlySpan<byte> CurveBytes => "Bitcoin seed"u8;
 
-    private Secp256K1HdKey()
-    {
-    }
+    private Secp256K1HdKey() { }
 
     public int PublicKeySize => 33;
 
     public void GetMasterKeyFromSeed(ReadOnlySpan<byte> seed, ref Bip32Key result)
     {
-        var seedCopy = result.Span;
-        seed.CopyTo(seedCopy);
-        var key = seedCopy[..32];
+        var resultSpan = result.Span;
+        HMACSHA512.HashData(CurveBytes, seed, resultSpan);
 
         while (true)
         {
-            HMACSHA512.HashData(CurveBytes, seedCopy, seedCopy);
-            if (SecP256k1Native.VerifyPrivateKey(key)) return;
+            if (SecP256k1Native.VerifyPrivateKey(resultSpan[..32])) return;
+            
+// ReSharper disable once StackAllocInsideLoop because of extremely low probability of hash to be >N
+// probablity is around 2^-128
+#pragma warning disable CA2014
+            Span<byte> retryData = stackalloc byte[33];
+            
+            // SLIP-0010 retry: HMAC(Curve, 0x01 || IR)
+            retryData[0] = 0x01;
+            resultSpan[32..].CopyTo(retryData[1..]);
+            
+            HMACSHA512.HashData(CurveBytes, retryData, resultSpan);
         }
     }
 
-    public void Derive(ref readonly Bip32Key parent, ref readonly KeyPathElement index, ref Bip32Key result)
+    public void Derive(ref readonly Bip32Key parent, KeyPathElement index, ref Bip32Key result)
     {
-        var parentSpan = parent.Span != result.Span
+        var parentSpan = !parent.Span.Overlaps(result.Span)
             ? parent.Span
             : stackalloc byte[64];
-        if (parent.Span == result.Span) parent.Span.CopyTo(parentSpan);
 
+        if (parent.Span.Overlaps(result.Span))
+            parent.Span.CopyTo(parentSpan);
+
+        var parentKey = parentSpan[..32];
+        var parentCc  = parentSpan[32..];
         var resultSpan = result.Span;
 
         if (index.Hardened)
-            Bip32Utils.Bip32Hash(parent.ChainCode, in index, 0x00, parent.Key, resultSpan);
+            Bip32Utils.Bip32Hash(parentCc, index, 0x00, parentKey, resultSpan);
         else
-            Bip32Utils.Bip32SoftHash(parent.ChainCode, in index, parent.Key, this, resultSpan);
+            Bip32Utils.Bip32SoftHash(parentCc, index, parentKey, this, resultSpan);
 
         var key = resultSpan[..32];
-        var cc = resultSpan[32..];
+        var cc  = resultSpan[32..];
 
         while (true)
         {
             if (SecP256k1Native.VerifyPrivateKey(key)
-                && SecP256k1Native.Tweak(key, parentSpan[..32], SecP256k1Native.KeyType.PrivateKey, SecP256k1Native.TweakMode.Add)) return;
+                && SecP256k1Native.Tweak(key, parentKey, SecP256k1Native.KeyType.PrivateKey, SecP256k1Native.TweakMode.Add))
+                return;
 
-            Bip32Utils.Bip32Hash(parentSpan[32..], in index, 0x01, cc, resultSpan);
+            Bip32Utils.Bip32Hash(parentCc, index, 0x01, cc, resultSpan);
         }
     }
 
