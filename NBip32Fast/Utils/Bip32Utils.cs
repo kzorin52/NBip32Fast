@@ -15,6 +15,19 @@ public static class Bip32Utils
         HMACSHA512.HashData(chainCode, hmacAlloc, output);
     }
 
+    /// <summary>
+    /// Soft-derivation hash using an already-serialized parent public key
+    /// (skips the EC multiplication needed to recompute it).
+    /// </summary>
+    public static void Bip32SoftHash(ReadOnlySpan<byte> chainCode, KeyPathElement index, ReadOnlySpan<byte> publicKey, Span<byte> output)
+    {
+        Span<byte> hmacAlloc = stackalloc byte[publicKey.Length + 4];
+        publicKey.CopyTo(hmacAlloc);
+        index.Serialize(hmacAlloc.Slice(publicKey.Length, 4));
+
+        HMACSHA512.HashData(chainCode, hmacAlloc, output);
+    }
+
     public static void Bip32SoftHash(ReadOnlySpan<byte> chainCode, KeyPathElement index, ReadOnlySpan<byte> privateKey, IBip32Deriver keyAlgo, Span<byte> output)
     {
         var pubSize = keyAlgo.PublicKeySize;

@@ -5,7 +5,7 @@ using NBip32Fast.Utils;
 
 namespace NBip32Fast.Ed25519;
 
-public class Ed25519HdKey : IBip32Deriver
+public sealed class Ed25519HdKey : IBip32Deriver
 {
     public static readonly IBip32Deriver Instance = new Ed25519HdKey();
     private static ReadOnlySpan<byte> CurveBytes => "ed25519 seed"u8;

@@ -5,7 +5,7 @@ using Temnij.Crypto;
 
 namespace NBip32Fast.Secp256K1;
 
-public class Secp256K1HdKey : IBip32Deriver
+public sealed class Secp256K1HdKey : IBip32Deriver
 {
     public static readonly IBip32Deriver Instance = new Secp256K1HdKey();
     private static ReadOnlySpan<byte> CurveBytes => "Bitcoin seed"u8;
@@ -38,11 +38,17 @@ public class Secp256K1HdKey : IBip32Deriver
 
     public void Derive(ref readonly Bip32Key parent, KeyPathElement index, ref Bip32Key result)
     {
-        var parentSpan = !parent.Span.Overlaps(result.Span)
+        Derive(in parent, [], index, ref result);
+    }
+
+    public void Derive(ref readonly Bip32Key parent, scoped ReadOnlySpan<byte> parentPublicKey, KeyPathElement index, ref Bip32Key result)
+    {
+        var overlaps = parent.Span.Overlaps(result.Span);
+        var parentSpan = !overlaps
             ? parent.Span
             : stackalloc byte[64];
 
-        if (parent.Span.Overlaps(result.Span))
+        if (overlaps)
             parent.Span.CopyTo(parentSpan);
 
         var parentKey = parentSpan[..32];
@@ -51,16 +57,17 @@ public class Secp256K1HdKey : IBip32Deriver
 
         if (index.Hardened)
             Bip32Utils.Bip32Hash(parentCc, index, 0x00, parentKey, resultSpan);
-        else
+        else if (parentPublicKey.IsEmpty)
             Bip32Utils.Bip32SoftHash(parentCc, index, parentKey, this, resultSpan);
+        else
+            Bip32Utils.Bip32SoftHash(parentCc, index, parentPublicKey, resultSpan);
 
         var key = resultSpan[..32];
         var cc  = resultSpan[32..];
 
         while (true)
         {
-            if (SecP256k1Native.VerifyPrivateKey(key)
-                && SecP256k1Native.Tweak(key, parentKey, SecP256k1Native.KeyType.PrivateKey, SecP256k1Native.TweakMode.Add))
+            if (SecP256k1Native.Tweak(key, parentKey, SecP256k1Native.KeyType.PrivateKey, SecP256k1Native.TweakMode.Add))
                 return;
 
             Bip32Utils.Bip32Hash(parentCc, index, 0x01, cc, resultSpan);

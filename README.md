@@ -31,6 +31,30 @@ for (var i = 0u; i < 5u; i++)
 }
 ```
 
+### Sibling scan (many children of one parent)
+When deriving many **soft** children of the same parent (e.g. scanning wallet addresses `m/44'/60'/0'/0/{i}`), wrap the parent in a `Bip32Parent`. It computes the parent public key once and reuses it for every child, instead of one EC multiplication per child — about **10x faster** for secp256k1:
+
+```cs
+var account = new Bip32Key();
+Secp256K1HdKey.Instance.DerivePath("m/44'/60'/0'/0", seed, ref account);
+
+var parent = new Bip32Parent(in account, Secp256K1HdKey.Instance);
+
+var child = new Bip32Key();
+for (var i = 0u; i < 1000u; i++)
+{
+    parent.Derive(KeyPathElement.Soft(i), ref child); // EC point multiplication happens once, not 1000 times
+    // use child.Key / child.ChainCode
+}
+```
+
+Hardened indices work too (they simply take the regular path, since no public key is involved).
+
+| Method                 | Count |       Mean | Ratio | Allocated |
+|------------------------|------:|-----------:|------:|----------:|
+| **CachedParentDerive** |   100 |   142.6 us |  0.10 |         - |
+| PlainDerive            |   100 | 1,424.7 us |  1.00 |         - |
+
 ## Benchmarks
 > AMD Ryzen Threadripper 7980X 64-Cores 2.18GHz, 1 CPU, 128 logical and 64 physical cores (lower values is better)
 

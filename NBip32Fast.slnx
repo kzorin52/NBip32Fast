@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Solution items/">
     <File Path="README.md" />
+    <File Path="LICENSE.txt" />
   </Folder>
   <Project Path="NBip32Fast.Benchmark/NBip32Fast.Benchmark.csproj" />
   <Project Path="NBip32Fast.Ed25519/NBip32Fast.Ed25519.csproj" />

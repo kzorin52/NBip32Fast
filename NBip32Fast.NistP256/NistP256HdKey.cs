@@ -5,7 +5,7 @@ using Nethermind.Int256;
 
 namespace NBip32Fast.NistP256;
 
-public class NistP256HdKey : IBip32Deriver
+public sealed class NistP256HdKey : IBip32Deriver
 {
     public static readonly IBip32Deriver Instance = new NistP256HdKey();
     private static ReadOnlySpan<byte> CurveBytes => "Nist256p1 seed"u8;
@@ -46,6 +46,11 @@ public class NistP256HdKey : IBip32Deriver
 
     public void Derive(ref readonly Bip32Key parent, KeyPathElement index, ref Bip32Key result)
     {
+        Derive(in parent, [], index, ref result);
+    }
+
+    public void Derive(ref readonly Bip32Key parent, scoped ReadOnlySpan<byte> parentPublicKey, KeyPathElement index, ref Bip32Key result)
+    {
         var parentChainCode = !parent.Span.Overlaps(result.Span)
             ? parent.Span[32..]
             : stackalloc byte[32];
@@ -58,8 +63,10 @@ public class NistP256HdKey : IBip32Deriver
 
         if (index.Hardened)
             Bip32Utils.Bip32Hash(parent.ChainCode, index, 0x00, parent.Key, resultSpan);
-        else
+        else if (parentPublicKey.IsEmpty)
             Bip32Utils.Bip32SoftHash(parent.ChainCode, index, parent.Key, this, resultSpan);
+        else
+            Bip32Utils.Bip32SoftHash(parent.ChainCode, index, parentPublicKey, resultSpan);
 
         var key = resultSpan[..32];
         var cc  = resultSpan[32..];

@@ -12,6 +12,16 @@ public interface IBip32Deriver
     public void GetMasterKeyFromSeed(ReadOnlySpan<byte> seed, ref Bip32Key result);
     public void Derive(ref readonly Bip32Key parent, KeyPathElement index, ref Bip32Key result);
 
+    /// <summary>
+    /// Derive using a precomputed serialized parent public key — the soft-derivation
+    /// fast path when deriving many siblings of the same parent (see <see cref="Bip32Parent"/>).
+    /// The default implementation ignores the hint.
+    /// </summary>
+    public void Derive(ref readonly Bip32Key parent, scoped ReadOnlySpan<byte> parentPublicKey, KeyPathElement index, ref Bip32Key result)
+    {
+        Derive(in parent, index, ref result);
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte[] GetPublic(ReadOnlySpan<byte> privateKey)
     {
